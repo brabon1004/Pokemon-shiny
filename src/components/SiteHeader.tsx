@@ -24,7 +24,7 @@ export function SiteHeader({ generatedAt, now, query, onQueryChange, onOpenCalcu
       <div className="brand">
         <SparkleMark />
         <div className="brand__text">
-          <h1 className="brand__title">Shiny Odds</h1>
+          <h1 className="brand__title">Shiny Tracker</h1>
           <p className="brand__tagline">Shiny chances for everything live in Pokémon GO right now</p>
         </div>
       </div>

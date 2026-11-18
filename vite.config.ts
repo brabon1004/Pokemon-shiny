@@ -3,7 +3,7 @@ import { defineConfig } from 'vitest/config'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/Pokemon-shiny/',
+  base: '/',
   plugins: [react()],
   test: {
     projects: [

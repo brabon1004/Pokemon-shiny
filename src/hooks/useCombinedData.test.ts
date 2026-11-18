@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import sample from '../fixtures/combined.sample.json'
 import { useCombinedData } from './useCombinedData.ts'
 
-const liveOnly = { url: '/Pokemon-shiny/data/combined.json' }
+const liveOnly = { url: '/data/combined.json' }
 
 afterEach(() => {
   vi.unstubAllGlobals()

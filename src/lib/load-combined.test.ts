@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 import sample from '../fixtures/combined.sample.json'
 import { loadCombined } from './load-combined.ts'
 
-const url = '/Pokemon-shiny/data/combined.json'
+const url = '/data/combined.json'
 
 function respondWith(body: unknown, status = 200): typeof fetch {
   return vi.fn(async () => new Response(JSON.stringify(body), { status }))

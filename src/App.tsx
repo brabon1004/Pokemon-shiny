@@ -12,7 +12,7 @@ export default function App() {
   return (
     <div className="page">
       <main className="page__inner status-screen" aria-busy={state.status === 'loading'}>
-        <h1 className="brand__title">Shiny Odds</h1>
+        <h1 className="brand__title">Shiny Tracker</h1>
         {state.status === 'loading' ? (
           <p role="status" className="muted">
             Loading the latest data…

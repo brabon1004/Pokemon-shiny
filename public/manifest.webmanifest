@@ -1,6 +1,6 @@
 {
-  "name": "Shiny Odds",
-  "short_name": "Shiny Odds",
+  "name": "Shiny Tracker",
+  "short_name": "Shiny Tracker",
   "description": "Shiny odds for the raids, eggs, research and event spawns live in Pokémon GO right now, with a shiny chance calculator.",
   "id": "./",
   "start_url": "./",

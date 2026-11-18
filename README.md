@@ -1,8 +1,8 @@
-# Pokémon GO Shiny Odds Tracker
+# Shiny Tracker
 
 An unofficial fan site that shows what's live in Pokémon GO right now and how likely each Pokémon is to be shiny. Every card carries a community-estimated shiny rate, and a calculator works out your chance of at least one shiny in N encounters.
 
-Live site: https://brabon1004.github.io/Pokemon-shiny/
+Live site: https://shiny-tracker-go.pages.dev
 
 ## Tabs
 
@@ -22,7 +22,7 @@ Nothing in `public/data/` is committed. The deploy workflow builds `public/data/
 3. LeekDuck's shiny list (`leekduck.com/shiny/pms.json`) for the All Pokémon tab. If that fetch fails, the build uses the snapshot in `data/shiny-list.snapshot.json`. The build also checks raid, egg, research and wild encounters against it: ScrapedDuck's `canBeShiny` flag misses released shinies (it once marked every research reward as not shiny), so an encounter counts as shiny when ScrapedDuck says so or when its form is on the list with a release date on or before the build date. Shadow raid bosses keep ScrapedDuck's flag, because the list has no shadow entries.
 4. `data/rates.json`: the shiny rate table and the Max Battle rotation, both edited by hand.
 
-The workflow (`.github/workflows/deploy.yml`) runs on every push to `prod`, every 4 hours on a schedule, and on demand from the Actions tab. It always builds the `prod` branch, so work on `main` never reaches the live site until it is merged into `prod`. It type-checks, lints and tests, builds the data, builds the site and deploys it to GitHub Pages. If any step fails, nothing is deployed and the last good version stays up.
+The workflow (`.github/workflows/deploy.yml`) runs on every push to `prod`, every 4 hours on a schedule, and on demand from the Actions tab. It always builds the `prod` branch, so work on `main` never reaches the live site until it is merged into `prod`. It type-checks, lints and tests, builds the data, builds the site and deploys it to Cloudflare Pages. If any step fails, nothing is deployed and the last good version stays up.
 
 ## Local development
 
@@ -90,9 +90,19 @@ The build also finds bosses on its own. For a running ScrapedDuck event of type 
 
 ## One-time setup
 
-In the GitHub repo, go to **Settings › Pages** and set **Source** to **GitHub Actions**. Without this, the deploy job fails.
+The site is hosted on Cloudflare Pages in the project `shiny-tracker-go`, whose production branch is `prod`. If you ever need to recreate it, run these from outside the repo, because Wrangler edits project files when run inside it. `--force` doesn't appear in `--help`, but without it Wrangler 4.165 converts the new project to Cloudflare Workers instead of Pages:
 
-Then go to **Settings › Environments › github-pages** and make sure **Deployment branches** allows both `prod` (pushes) and `main` (scheduled runs start from the default branch, even though they build `prod`).
+```
+npx wrangler login
+npx wrangler pages project create shiny-tracker-go --production-branch=prod --force
+```
+
+The workflow needs two repository secrets under **Settings › Secrets and variables › Actions**:
+
+- `CLOUDFLARE_API_TOKEN`: a Cloudflare API token with the account permission **Cloudflare Pages: Edit**.
+- `CLOUDFLARE_ACCOUNT_ID`: your Cloudflare account ID.
+
+The site used to be on GitHub Pages at `brabon1004.github.io/Pokemon-shiny`. That copy no longer updates, so turn it off under **Settings › Pages** (unpublish) and delete the `github-pages` environment under **Settings › Environments**.
 
 ## Keeping the schedule alive
 
