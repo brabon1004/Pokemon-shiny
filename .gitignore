@@ -22,3 +22,6 @@ public/data/combined.json
 *.njsproj
 *.sln
 *.sw?
+
+# Local Cloudflare wrangler state
+.wrangler

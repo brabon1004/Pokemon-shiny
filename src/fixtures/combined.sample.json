@@ -8,7 +8,9 @@
     "boosted": { "label": "Boosted", "denom": 64 },
     "comm_day": { "label": "Community Day", "denom": 25 },
     "legendary": { "label": "Legendary", "denom": 20 },
-    "raid_day": { "label": "Raid Day", "denom": 10 }
+    "raid_day": { "label": "Raid Day", "denom": 10 },
+    "dynamax": { "label": "Dynamax", "denom": 64, "unverified": true },
+    "gigantamax": { "label": "Gigantamax", "denom": 64, "unverified": true }
   },
   "wild": [
     {
@@ -87,6 +89,30 @@
       "shiny": false,
       "denom": null,
       "tier": null
+    }
+  ],
+  "dynamax": [
+    { "key": "dynamax:list:Dynamax Bulbasaur", "dex": 1, "name": "Dynamax Bulbasaur", "source": "1★ Max Battle", "shiny": true, "denom": 64, "tier": "dynamax" },
+    { "key": "dynamax:list:Dynamax Squirtle", "dex": 7, "name": "Dynamax Squirtle", "source": "1★ Max Battle", "shiny": true, "denom": 64, "tier": "dynamax" },
+    {
+      "key": "dynamax:max-battle-day-2026:Gigantamax Pikachu",
+      "dex": 25,
+      "name": "Gigantamax Pikachu",
+      "source": "Gigantamax Pikachu Max Battle Day",
+      "shiny": true,
+      "denom": 64,
+      "tier": "gigantamax",
+      "window": { "start": "2026-11-18T06:00:00", "end": "2026-11-18T21:00:00", "local": true }
+    },
+    {
+      "key": "dynamax:max-mondays-2026-11-23:Dynamax Espurr",
+      "dex": 677,
+      "name": "Dynamax Espurr",
+      "source": "Dynamax Espurr during Max Monday",
+      "shiny": true,
+      "denom": 64,
+      "tier": "dynamax",
+      "window": { "start": "2026-11-23T06:00:00", "end": "2026-11-23T21:00:00", "local": true }
     }
   ],
   "eggs": [

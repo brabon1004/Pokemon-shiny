@@ -6,7 +6,9 @@
     "boosted": { "label": "Boosted", "denom": 64 },
     "comm_day": { "label": "Community Day", "denom": 25 },
     "legendary": { "label": "Legendary", "denom": 20 },
-    "raid_day": { "label": "Raid Day", "denom": 10 }
+    "raid_day": { "label": "Raid Day", "denom": 10 },
+    "dynamax": { "label": "Dynamax", "denom": 64, "unverified": true },
+    "gigantamax": { "label": "Gigantamax", "denom": 64, "unverified": true }
   },
   "encounterDefaults": {
     "wild": "base",
@@ -16,11 +18,24 @@
     "raid:3-Star Raids": "boosted",
     "raid:Mega Raids": "boosted",
     "raid:5-Star Raids": "legendary",
-    "raid:default": "boosted"
+    "raid:default": "boosted",
+    "max:dynamax": "dynamax",
+    "max:gigantamax": "gigantamax"
   },
   "eventTypeDefaults": {
     "community-day": "comm_day"
   },
   "speciesOverrides": {},
-  "eventOverrides": {}
+  "eventOverrides": {},
+  "maxBattles": {
+    "updated": "2026-11-18",
+    "until": "2026-11-23",
+    "bosses": [
+      { "name": "Bulbasaur", "dex": 1, "stars": 1, "form": "dynamax" },
+      { "name": "Charmander", "dex": 4, "stars": 1, "form": "dynamax" },
+      { "name": "Squirtle", "dex": 7, "stars": 1, "form": "dynamax" },
+      { "name": "Caterpie", "dex": 10, "stars": 1, "form": "dynamax" },
+      { "name": "Pikachu", "dex": 25, "stars": 1, "form": "dynamax" }
+    ]
+  }
 }

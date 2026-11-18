@@ -1,4 +1,4 @@
-import type { Row } from '../shared/contract.ts'
+import { MAX_BATTLE_LIST_KEY_PREFIX, type Row } from '../shared/contract.ts'
 import { parseEventTime } from '../shared/event-time.ts'
 
 type EventWindow = NonNullable<Row['window']>
@@ -28,7 +28,19 @@ export function isWindowActive(window: EventWindow, now: Date): boolean {
   return instant >= start && instant < end
 }
 
-/** Wild rows live at `now`. A row without a window has no end we know of, so it stays listed. */
-export function selectActiveWild(rows: readonly Row[], now: Date): Row[] {
+/** Rows live at `now` (wild spawns, event Max Battles). A row without a window has no end we know of, so it stays listed. */
+export function selectLiveRows(rows: readonly Row[], now: Date): Row[] {
   return rows.filter((row) => row.window === undefined || isWindowActive(row.window, now))
+}
+
+const isListedBoss = (row: Row): boolean => row.key.startsWith(MAX_BATTLE_LIST_KEY_PREFIX)
+const bossIdentity = (row: Row): string => `${row.dex}:${row.name}`
+
+/**
+ * Dynamax rows: a boss on the hand-kept list is left out while an event row lists the same boss ("Dynamax Espurr"
+ * names the form too). Run it on live rows, so the list row comes back when the event ends in the viewer's timezone.
+ */
+export function dropListedBossesWithEvents(rows: readonly Row[]): Row[] {
+  const eventBosses = new Set(rows.filter((row) => !isListedBoss(row)).map(bossIdentity))
+  return rows.filter((row) => !isListedBoss(row) || !eventBosses.has(bossIdentity(row)))
 }

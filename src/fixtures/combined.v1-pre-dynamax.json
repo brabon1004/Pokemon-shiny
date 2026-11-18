@@ -1,0 +1,164 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-18T14:00:00Z",
+  "ratesUpdated": "2026-11-18",
+  "tiers": {
+    "base": { "label": "Base", "denom": 512 },
+    "event": { "label": "Event boosted", "denom": 128 },
+    "boosted": { "label": "Boosted", "denom": 64 },
+    "comm_day": { "label": "Community Day", "denom": 25 },
+    "legendary": { "label": "Legendary", "denom": 20 },
+    "raid_day": { "label": "Raid Day", "denom": 10 }
+  },
+  "wild": [
+    {
+      "key": "wild:november-community-day-2026:Sprigatito",
+      "dex": 906,
+      "name": "Sprigatito",
+      "source": "Community Day: November Community Day",
+      "shiny": true,
+      "denom": 25,
+      "tier": "comm_day",
+      "window": { "start": "2026-11-22T14:00:00", "end": "2026-11-22T17:00:00", "local": true }
+    },
+    {
+      "key": "wild:festival-of-lights-2026:Litwick",
+      "dex": 607,
+      "name": "Litwick",
+      "source": "Event: Festival of Lights",
+      "shiny": true,
+      "denom": 128,
+      "tier": "event",
+      "window": { "start": "2026-11-14T10:00:00", "end": "2026-11-20T20:00:00", "local": true }
+    },
+    {
+      "key": "wild:galarian-expedition-2026:Galarian Ponyta",
+      "dex": 77,
+      "name": "Galarian Ponyta",
+      "source": "Event: Galarian Expedition",
+      "shiny": true,
+      "denom": 128,
+      "tier": "event",
+      "window": { "start": "2026-11-17T18:00:00Z", "end": "2026-11-24T04:00:00Z", "local": false }
+    }
+  ],
+  "raids": [
+    {
+      "key": "raid:5-Star Raids:Kyogre",
+      "dex": 382,
+      "name": "Kyogre",
+      "source": "5-star raid",
+      "shiny": true,
+      "denom": 20,
+      "tier": "legendary"
+    },
+    {
+      "key": "raid:5-Star Raids:Shadow Raikou",
+      "dex": 243,
+      "name": "Shadow Raikou",
+      "source": "5-star raid",
+      "shiny": true,
+      "denom": 20,
+      "tier": "legendary"
+    },
+    {
+      "key": "raid:Mega Raids:Mega Gengar",
+      "dex": 94,
+      "name": "Mega Gengar",
+      "source": "Mega raid",
+      "shiny": true,
+      "denom": 64,
+      "tier": "boosted"
+    },
+    {
+      "key": "raid:3-Star Raids:Alolan Marowak",
+      "dex": 105,
+      "name": "Alolan Marowak",
+      "source": "3-star raid",
+      "shiny": true,
+      "denom": 64,
+      "tier": "boosted"
+    },
+    {
+      "key": "raid:1-Star Raids:Wiglett",
+      "dex": 960,
+      "name": "Wiglett",
+      "source": "1-star raid",
+      "shiny": false,
+      "denom": null,
+      "tier": null
+    }
+  ],
+  "eggs": [
+    {
+      "key": "egg:2 km:Togepi",
+      "dex": 175,
+      "name": "Togepi",
+      "source": "2 km egg",
+      "shiny": true,
+      "denom": 64,
+      "tier": "boosted"
+    },
+    {
+      "key": "egg:7 km:Galarian Slowpoke",
+      "dex": 79,
+      "name": "Galarian Slowpoke",
+      "source": "7 km egg",
+      "shiny": true,
+      "denom": 64,
+      "tier": "boosted"
+    },
+    {
+      "key": "egg:10 km:Bramblin",
+      "dex": 946,
+      "name": "Bramblin",
+      "source": "10 km egg",
+      "shiny": false,
+      "denom": null,
+      "tier": null
+    }
+  ],
+  "research": [
+    {
+      "key": "research:Catch 10 Dragon-type Pokémon:Dratini",
+      "dex": 147,
+      "name": "Dratini",
+      "source": "Research: Catch 10 Dragon-type Pokémon",
+      "shiny": true,
+      "denom": 512,
+      "tier": "base"
+    },
+    {
+      "key": "research:Win a raid:Sableye",
+      "dex": 302,
+      "name": "Sableye",
+      "source": "Research: Win a raid",
+      "shiny": true,
+      "denom": 512,
+      "tier": "base"
+    },
+    {
+      "key": "research:Make 5 Great Throws:Spinda",
+      "dex": 327,
+      "name": "Spinda",
+      "source": "Research: Make 5 Great Throws",
+      "shiny": false,
+      "denom": null,
+      "tier": null
+    }
+  ],
+  "all": [
+    { "key": "all:1", "dex": 1, "name": "Bulbasaur", "source": "Wild", "shiny": true, "denom": 512, "tier": "base" },
+    { "key": "all:4", "dex": 4, "name": "Charmander", "source": "Wild", "shiny": true, "denom": 512, "tier": "base" },
+    { "key": "all:7", "dex": 7, "name": "Squirtle", "source": "Wild", "shiny": true, "denom": 512, "tier": "base" },
+    { "key": "all:25", "dex": 25, "name": "Pikachu", "source": "Wild", "shiny": true, "denom": 512, "tier": "base" },
+    { "key": "all:52", "dex": 52, "name": "Meowth", "source": "Wild", "shiny": true, "denom": 512, "tier": "base" },
+    { "key": "all:52:alola", "dex": 52, "name": "Alolan Meowth", "source": "Wild", "shiny": true, "denom": 512, "tier": "base" },
+    { "key": "all:133", "dex": 133, "name": "Eevee", "source": "Wild", "shiny": true, "denom": 512, "tier": "base" },
+    { "key": "all:147", "dex": 147, "name": "Dratini", "source": "Wild", "shiny": true, "denom": 512, "tier": "base" },
+    { "key": "all:175", "dex": 175, "name": "Togepi", "source": "Wild", "shiny": true, "denom": 512, "tier": "base" },
+    { "key": "all:382", "dex": 382, "name": "Kyogre", "source": "Wild", "shiny": true, "denom": 512, "tier": "base" },
+    { "key": "all:607", "dex": 607, "name": "Litwick", "source": "Wild", "shiny": true, "denom": 512, "tier": "base" },
+    { "key": "all:906", "dex": 906, "name": "Sprigatito", "source": "Wild", "shiny": true, "denom": 512, "tier": "base" }
+  ]
+}

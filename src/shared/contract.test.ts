@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import sample from '../fixtures/combined.sample.json' with { type: 'json' }
+import preDynamax from '../fixtures/combined.v1-pre-dynamax.json' with { type: 'json' }
 import { combinedSchema, rowSchema } from './contract.ts'
 
 const shinyRow = {
@@ -19,6 +20,24 @@ describe('combinedSchema', () => {
     expect(parsed.all.length).toBeGreaterThanOrEqual(10)
     expect(parsed.wild.every((row) => row.window !== undefined)).toBe(true)
     expect([...parsed.raids, ...parsed.eggs, ...parsed.research].some((row) => !row.shiny)).toBe(true)
+  })
+
+  it('reads the combined.json deployed before the Dynamax tab: no Max Battle rows, Max tiers filled in', () => {
+    const parsed = combinedSchema.parse(preDynamax)
+    expect(parsed.dynamax).toEqual([])
+    expect(parsed.tiers.base).toEqual({ label: 'Base', denom: 512 })
+    expect(parsed.tiers.dynamax).toEqual({ label: 'Dynamax', denom: 64, unverified: true })
+    expect(parsed.tiers.gigantamax).toEqual({ label: 'Gigantamax', denom: 64, unverified: true })
+  })
+
+  it('keeps tiers the file does list over the fallbacks', () => {
+    const tiers = { ...sample.tiers, dynamax: { label: 'Dynamax', denom: 100 } }
+    expect(combinedSchema.parse({ ...sample, tiers }).tiers.dynamax).toEqual({ label: 'Dynamax', denom: 100 })
+  })
+
+  it('still rejects a file missing a tier that predates the Dynamax tab', () => {
+    const { base: _omitted, ...tiers } = sample.tiers
+    expect(combinedSchema.safeParse({ ...sample, tiers }).success).toBe(false)
   })
 
   it('rejects an unknown schemaVersion', () => {
@@ -45,6 +64,10 @@ describe('rowSchema', () => {
     const result = rowSchema.safeParse({ ...shinyRow, shiny: false, tier: null })
     expect(result.success).toBe(false)
     expect(result.error?.issues[0]?.message).toMatch(/non-shiny rows must have denom and tier set to null/)
+  })
+
+  it.each(['dynamax', 'gigantamax'])('accepts a Max Battle row at the %s tier', (tier) => {
+    expect(rowSchema.parse({ ...shinyRow, tier, denom: 64 }).tier).toBe(tier)
   })
 
   it('rejects an unknown tier', () => {

@@ -1,6 +1,7 @@
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
 import sampleJson from '../fixtures/combined.sample.json'
+import preDynamaxJson from '../fixtures/combined.v1-pre-dynamax.json'
 import { combinedSchema, type Combined, type Row } from '../shared/contract.ts'
 import { emulateCompactViewport } from '../test/setup.ts'
 import { ShinyOddsPage } from './ShinyOddsPage.tsx'
@@ -25,7 +26,7 @@ describe('tabs', () => {
   it('labels each tab with its row count, counting only live wild spawns', () => {
     renderPage()
     const tabs = screen.getAllByRole('tab').map((tab) => tab.textContent)
-    expect(tabs).toEqual(['Wild2', 'Raids5', 'Eggs3', 'Research3', 'All Pokémon12'])
+    expect(tabs).toEqual(['Wild2', 'Raids5', 'Dynamax3', 'Eggs3', 'Research3', 'All Pokémon12'])
   })
 
   it('starts on Wild showing only live spawns, best odds first', () => {
@@ -53,12 +54,12 @@ describe('tabs', () => {
   })
 
   it('starts on the first tab in tab order that has rows when Wild is empty', () => {
-    renderPage({ ...sample, wild: [], raids: [] })
+    renderPage({ ...sample, wild: [], raids: [], dynamax: [] })
     expect(screen.getByRole('tab', { selected: true }).textContent).toBe('Eggs3')
   })
 
   it('starts on Wild when every tab is empty', () => {
-    renderPage({ ...sample, wild: [], raids: [], eggs: [], research: [], all: [] })
+    renderPage({ ...sample, wild: [], raids: [], dynamax: [], eggs: [], research: [], all: [] })
     expect(screen.getByRole('tab', { selected: true }).textContent).toBe('Wild0')
   })
 
@@ -95,6 +96,47 @@ describe('tabs', () => {
     expect(document.activeElement).toBe(screen.getByRole('tab', { name: /All Pokémon/ }))
     fireEvent.keyDown(document.activeElement as Element, { key: 'Home' })
     expect(document.activeElement).toBe(wild)
+  })
+})
+
+describe('Dynamax tab', () => {
+  it('lists Max Battle bosses live now under a note that their rates are unverified', () => {
+    renderPage()
+    fireEvent.click(screen.getByRole('tab', { name: /Dynamax/ }))
+    expect(screen.getByRole('heading', { level: 2, name: 'Max Battles' })).toBeTruthy()
+    expect(screen.getByText('Shiny rates for Max Battles are unverified estimates.')).toBeTruthy()
+    // Dynamax Espurr's Max Monday has not started yet.
+    expect(cardNames()).toEqual(['Dynamax Bulbasaur', 'Dynamax Squirtle', 'Gigantamax Pikachu'])
+    const bulbasaur = screen.getByRole('heading', { name: 'Dynamax Bulbasaur' }).closest('article') as HTMLElement
+    expect(within(bulbasaur).getByText('1★ Max Battle')).toBeTruthy()
+  })
+
+  it('leaves off a tier chip that would repeat the name, but keeps one that differs', () => {
+    const boosted: Row = { ...(sample.dynamax[0] as Row), key: 'dynamax:x:Dynamax Eevee', name: 'Dynamax Eevee', tier: 'event', denom: 128 }
+    renderPage({ ...sample, dynamax: [sample.dynamax[0] as Row, boosted] })
+    fireEvent.click(screen.getByRole('tab', { name: /Dynamax/ }))
+    const bulbasaur = screen.getByRole('heading', { name: 'Dynamax Bulbasaur' }).closest('article') as HTMLElement
+    expect(within(bulbasaur).queryByText('Dynamax')).toBeNull()
+    const eevee = screen.getByRole('heading', { name: 'Dynamax Eevee' }).closest('article') as HTMLElement
+    expect(within(eevee).getByText('Event boosted')).toBeTruthy()
+  })
+
+  it('says so when no Max Battle boss is listed', () => {
+    renderPage({ ...sample, dynamax: [] })
+    fireEvent.click(screen.getByRole('tab', { name: /Dynamax/ }))
+    expect(screen.getByText('No Max Battle bosses listed right now.')).toBeTruthy()
+  })
+
+  it('renders a combined.json from before the Dynamax tab with an empty Dynamax tab', () => {
+    renderPage(combinedSchema.parse(preDynamaxJson))
+    expect(screen.getByRole('tab', { name: /Dynamax/ }).textContent).toBe('Dynamax0')
+    fireEvent.click(screen.getByRole('tab', { name: /Dynamax/ }))
+    expect(screen.getByText('No Max Battle bosses listed right now.')).toBeTruthy()
+  })
+
+  it('shows no unverified note on other tabs', () => {
+    renderPage()
+    expect(screen.queryByText('Shiny rates for Max Battles are unverified estimates.')).toBeNull()
   })
 })
 
@@ -225,10 +267,20 @@ describe('rate tiers legend', () => {
       'BaseAbout 1 in 512',
       'Event boostedAbout 1 in 128',
       'BoostedAbout 1 in 64',
+      'DynamaxAbout 1 in 64* (unverified)',
+      'GigantamaxAbout 1 in 64* (unverified)',
       'Community DayAbout 1 in 25',
       'LegendaryAbout 1 in 20',
       'Raid DayAbout 1 in 10',
     ])
+  })
+
+  it('leaves out the unverified footnote when every tier is researched', () => {
+    const tiers = Object.fromEntries(Object.entries(sample.tiers).map(([tier, info]) => [tier, { label: info.label, denom: info.denom }]))
+    renderPage(combinedSchema.parse({ ...sample, tiers }))
+    const legend = screen.getByRole('region', { name: 'Rate tiers' })
+    expect(legend.textContent).not.toContain('Unverified estimate')
+    expect(legend.textContent).not.toContain('*')
   })
 })
 
@@ -279,8 +331,9 @@ describe('phone layout', () => {
     const disclosure = summary.closest('details')
     expect(summary.tagName).toBe('SUMMARY')
     expect(disclosure?.open).toBe(false)
-    expect(disclosure?.textContent).toContain('Every number here is a community estimate.')
-    expect(disclosure?.querySelectorAll('li')).toHaveLength(6)
+    expect(disclosure?.textContent).toContain('Niantic does not publish shiny rates. Most are community estimates from past research.')
+    expect(disclosure?.textContent).toContain('* Unverified estimate: no research has measured it.')
+    expect(disclosure?.querySelectorAll('li')).toHaveLength(8)
   })
 
   it('keeps the tab bar keyboard-navigable', () => {

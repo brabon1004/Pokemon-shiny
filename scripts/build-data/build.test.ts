@@ -34,13 +34,33 @@ describe('buildCombined', () => {
     expect({
       wild: combined.wild.length,
       raids: combined.raids.length,
+      dynamax: combined.dynamax.length,
       eggs: combined.eggs.length,
       research: combined.research.length,
       all: combined.all.length,
-    }).toEqual({ wild: 3, raids: 18, eggs: 77, research: 198, all: 42 })
+    }).toEqual({ wild: 3, raids: 18, dynamax: 5, eggs: 77, research: 198, all: 42 })
     expect(skipped).toEqual([])
     // Every reward in the saved research sample has canBeShiny: false, as live ScrapedDuck did on 2026-11-18.
-    expect(warnings).toEqual(['ScrapedDuck research: 0 of 198 rewards flagged shiny upstream; using the LeekDuck shiny list instead'])
+    expect(warnings).toEqual([
+      'ScrapedDuck research: 0 of 198 rewards flagged shiny upstream; using the LeekDuck shiny list instead',
+      'Max Battle events with no boss the build could read from the name (not listed on the Dynamax tab): ' +
+        'Eternamax Eternatus Returns (eternamax-eternatus-max-battles-2026)',
+    ])
+  })
+
+  it('lists the hand-kept Max Battle bosses and warns about a Max Battle event it cannot read', () => {
+    const { combined, warnings } = buildCombined(INPUT, FIXTURE_MINIMUMS)
+    expect(combined.dynamax.map((row) => [row.name, row.source])).toEqual([
+      ['Dynamax Bulbasaur', '1★ Max Battle'],
+      ['Dynamax Caterpie', '1★ Max Battle'],
+      ['Dynamax Charmander', '1★ Max Battle'],
+      ['Dynamax Pikachu', '1★ Max Battle'],
+      ['Dynamax Squirtle', '1★ Max Battle'],
+    ])
+    expect(warnings).toContain(
+      'Max Battle events with no boss the build could read from the name (not listed on the Dynamax tab): ' +
+        'Eternamax Eternatus Returns (eternamax-eternatus-max-battles-2026)',
+    )
   })
 
   it('marks research rewards shiny from the released shiny list when upstream flags none', () => {
@@ -69,6 +89,8 @@ describe('buildCombined', () => {
     const { warnings } = buildCombined({ ...INPUT, raids: [...INPUT.raids, eliteBoss], events: [...INPUT.events, garbled] }, FIXTURE_MINIMUMS)
     expect(warnings).toEqual([
       'ScrapedDuck research: 0 of 198 rewards flagged shiny upstream; using the LeekDuck shiny list instead',
+      'Max Battle events with no boss the build could read from the name (not listed on the Dynamax tab): ' +
+        'Eternamax Eternatus Returns (eternamax-eternatus-max-battles-2026)',
       'Unmapped raid tiers (using raid:default): Elite Raids',
       'Ignored 1 event with unparseable dates: garbled (soon to 2026-11-22T00:00:00.000)',
     ])
@@ -79,6 +101,22 @@ describe('buildCombined', () => {
       'sanity check failed: raids has 0 rows (minimum 1); eggs has 0 rows (minimum 1)',
     )
     expect(() => buildCombined(INPUT)).toThrow('all has 42 rows (minimum 500)')
+  })
+
+  it('fails when the Max Battle list names a dex with no species name', () => {
+    const missingno = { name: 'Missingno', dex: 9999, stars: 1, form: 'dynamax' as const }
+    const rates = { ...INPUT.rates, maxBattles: { ...INPUT.rates.maxBattles, bosses: [missingno] } }
+    expect(() => buildCombined({ ...INPUT, rates }, FIXTURE_MINIMUMS)).toThrow(
+      'data/rates.json references dex numbers not in data/species-names.json: maxBattles.bosses 9999',
+    )
+  })
+
+  it('fails when a Max Battle boss name does not match its dex', () => {
+    const misnamed = { name: 'Charmander', dex: 1, stars: 1, form: 'dynamax' as const }
+    const rates = { ...INPUT.rates, maxBattles: { ...INPUT.rates.maxBattles, bosses: [misnamed] } }
+    expect(() => buildCombined({ ...INPUT, rates }, FIXTURE_MINIMUMS)).toThrow(
+      'data/rates.json maxBattles lists "Charmander" as dex 1, but dex 1 is Bulbasaur in data/species-names.json. Fix the name or the dex.',
+    )
   })
 
   it('fails when rates.json overrides reference a dex with no species name', () => {

@@ -111,6 +111,7 @@ export function ShinyOddsPage({ data, now, isSample }: ShinyOddsPageProps) {
             <div className="results__header">
               <h2 className="results__title">{details.title}</h2>
               <span className="muted">Sorted by best odds</span>
+              {details.note !== undefined && <p className="results__note">{details.note}</p>}
             </div>
             {shownRows.length > 0 && activeTab === 'wild' ? (
               groupWildByEvent(shownRows).map((group) => {

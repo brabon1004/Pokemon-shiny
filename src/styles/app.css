@@ -285,6 +285,14 @@ summary {
   font-weight: 700;
 }
 
+.results__note {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}
+
 .results__more {
   display: flex;
   flex-wrap: wrap;
@@ -491,6 +499,14 @@ summary {
   background: var(--chip-raid-day-bg);
   color: var(--chip-raid-day-fg);
 }
+.chip--dynamax {
+  background: var(--chip-dynamax-bg);
+  color: var(--chip-dynamax-fg);
+}
+.chip--gigantamax {
+  background: var(--chip-gigantamax-bg);
+  color: var(--chip-gigantamax-fg);
+}
 
 /* Sidebar panels */
 
@@ -621,6 +637,7 @@ summary {
 
 .legend__odds {
   font-size: 14px;
+  text-align: right;
   color: var(--color-text-soft);
 }
 
@@ -844,7 +861,9 @@ html:has(.sheet[open]) {
     font-size: 16px;
   }
 
-  /* Tabs: fixed bottom bar, five equal slots within thumb reach. */
+  /* Tabs: fixed bottom bar, six slots within thumb reach. Slots share the width equally, but a slot never shrinks
+     below its label (1fr keeps the content minimum), so "Research" stays whole at 320px. With larger text the slots
+     outgrow the screen; the bar then scrolls sideways so "All" can still be reached, instead of being cut off. */
   .tabs {
     position: fixed;
     inset: auto 0 0;
@@ -852,16 +871,17 @@ html:has(.sheet[open]) {
     margin: 0;
     padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(6, 1fr);
     gap: 0;
-    overflow: visible;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
     background: var(--color-surface);
     border-top: 1px solid var(--color-border);
     overscroll-behavior: contain;
   }
   .tab {
     position: relative;
-    min-width: 0;
     min-height: var(--tab-bar-height);
     padding: 6px 2px;
     flex-direction: column;
@@ -912,13 +932,16 @@ html:has(.sheet[open]) {
 
   /* Rows: sprite, name and source, then odds on the right. The whole row is the Calculate button. */
   .card-grid {
+    /* Wider minimum than desktop cards: a sideways phone gets two roomy rows across, not three that break names. */
+    grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
     gap: 8px;
   }
-  /* Name and source sit beside the odds; the end date and tier chip may run under them, full width. */
+  /* Name and source sit beside the odds; the end date and tier chip may run under them, full width. Rows aim for
+     64px tall so more fit on screen; the stretched Calculate button still makes the whole row the touch target. */
   .card {
-    min-height: 80px;
-    padding: 10px 12px;
-    grid-template-columns: 56px minmax(0, 1fr) auto;
+    min-height: 64px;
+    padding: 7px 12px;
+    grid-template-columns: 48px minmax(0, 1fr) auto;
     grid-template-rows: repeat(4, auto);
     grid-template-areas:
       'sprite name odds'
@@ -940,14 +963,14 @@ html:has(.sheet[open]) {
     outline-offset: 2px;
   }
   .sprite {
-    width: 56px;
-    height: 56px;
+    width: 48px;
+    height: 48px;
   }
   .sprite--placeholder {
-    background-size: 14px 14px;
+    background-size: 12px 12px;
     background-position:
       0 0,
-      7px 7px;
+      6px 6px;
   }
   .card__info {
     display: contents;
@@ -1037,6 +1060,16 @@ html:has(.sheet[open]) {
     border: 0;
     border-radius: inherit;
     opacity: 0;
+  }
+}
+
+/* Phones held sideways have little height to spare, so the header scrolls away instead of staying pinned. */
+@media (max-height: 500px) {
+  html {
+    scroll-padding-top: 12px;
+  }
+  .site-header {
+    position: static;
   }
 }
 

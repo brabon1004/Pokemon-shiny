@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Row } from '../shared/contract.ts'
-import { filterByName, isWindowActive, selectActiveWild, sortByBestOdds } from './rows.ts'
+import { dropListedBossesWithEvents, filterByName, isWindowActive, selectLiveRows, sortByBestOdds } from './rows.ts'
 
 function shinyRow(name: string, denom: number): Row {
   return { key: name, dex: 1, name, source: 'test', shiny: true, denom, tier: 'base' }
@@ -70,12 +70,35 @@ describe('isWindowActive', () => {
   })
 })
 
-describe('selectActiveWild', () => {
+describe('selectLiveRows', () => {
   it('keeps rows whose window covers now and rows with no window', () => {
     const now = new Date('2026-11-18T12:00:00')
     const live = { ...shinyRow('live', 25), window: { start: '2026-11-18T00:00:00', end: '2026-11-19T00:00:00', local: true } }
     const later = { ...shinyRow('later', 25), window: { start: '2026-11-22T00:00:00', end: '2026-11-23T00:00:00', local: true } }
     const unbounded = shinyRow('unbounded', 128)
-    expect(selectActiveWild([live, later, unbounded], now).map((row) => row.name)).toEqual(['live', 'unbounded'])
+    expect(selectLiveRows([live, later, unbounded], now).map((row) => row.name)).toEqual(['live', 'unbounded'])
+  })
+})
+
+describe('dropListedBossesWithEvents', () => {
+  const maxRow = (key: string, dex: number, name: string): Row => ({ key, dex, name, source: 'test', shiny: true, denom: 64, tier: 'dynamax' })
+
+  it('drops a hand-kept boss when an event row has the same dex and name, keeping the event row', () => {
+    const rows = [
+      maxRow('dynamax:list:Dynamax Espurr', 677, 'Dynamax Espurr'),
+      maxRow('dynamax:list:Gigantamax Pikachu', 25, 'Gigantamax Pikachu'),
+      maxRow('dynamax:max-mondays:Dynamax Espurr', 677, 'Dynamax Espurr'),
+      maxRow('dynamax:dmax-pikachu:Dynamax Pikachu', 25, 'Dynamax Pikachu'),
+    ]
+    expect(dropListedBossesWithEvents(rows).map((row) => row.key)).toEqual([
+      'dynamax:list:Gigantamax Pikachu',
+      'dynamax:max-mondays:Dynamax Espurr',
+      'dynamax:dmax-pikachu:Dynamax Pikachu',
+    ])
+  })
+
+  it('keeps every hand-kept boss when no event features it', () => {
+    const rows = [maxRow('dynamax:list:Dynamax Espurr', 677, 'Dynamax Espurr'), maxRow('dynamax:list:Dynamax Bulbasaur', 1, 'Dynamax Bulbasaur')]
+    expect(dropListedBossesWithEvents(rows)).toEqual(rows)
   })
 })

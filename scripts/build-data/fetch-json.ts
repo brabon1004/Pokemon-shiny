@@ -1,6 +1,8 @@
 export const DEFAULT_TIMEOUT_MS = 15_000
 export const DEFAULT_RETRIES = 2
 export const DEFAULT_BACKOFF_MS = 1_000
+/** Default body cap for fetchJson. The upstream feeds are 100–200 KB, so this only stops a runaway or hostile body. */
+export const MAX_JSON_BODY_BYTES = 20 * 1024 * 1024
 
 export interface FetchOptions {
   timeoutMs?: number
@@ -57,9 +59,9 @@ export async function fetchText(url: string, options: FetchOptions = {}): Promis
   throw new Error(`unable to fetch ${url} after ${retries + 1} attempts: ${describe(lastError)}`, { cause: lastError })
 }
 
-/** GET and JSON.parse; the result is `unknown` until a zod schema validates it. */
+/** GET and JSON.parse; the result is `unknown` until a zod schema validates it. Bodies over MAX_JSON_BODY_BYTES fail. */
 export async function fetchJson(url: string, options: FetchOptions = {}): Promise<unknown> {
-  const body = await fetchText(url, options)
+  const body = await fetchText(url, { ...options, maxBodyBytes: options?.maxBodyBytes ?? MAX_JSON_BODY_BYTES })
   try {
     return JSON.parse(body)
   } catch (error) {

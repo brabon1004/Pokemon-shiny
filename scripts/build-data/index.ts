@@ -103,7 +103,7 @@ async function main(args: readonly string[]): Promise<void> {
     warn(`skipped ${skipped.length} upstream entries with no usable dex or name, e.g. ${examples.join('; ')}`)
   }
   for (const warning of warnings) warn(warning)
-  const counts = (['wild', 'raids', 'eggs', 'research', 'all'] as const).map((tab) => `${tab}=${combined[tab].length}`)
+  const counts = (['wild', 'raids', 'dynamax', 'eggs', 'research', 'all'] as const).map((tab) => `${tab}=${combined[tab].length}`)
   console.log(
     `wrote ${PATHS.output}: ${counts.join(' ')} shinyList=${shinyList.origin} eventPages=${encountersByEvent.size}` +
       `${shouldRefreshSnapshot ? ' (snapshot refreshed)' : ''} warnings=${skipped.length + warnings.length} in ${Date.now() - startedMs}ms`,

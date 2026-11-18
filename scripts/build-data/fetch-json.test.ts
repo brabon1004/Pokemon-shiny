@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { fetchJson, fetchText } from './fetch-json.ts'
+import { fetchJson, fetchText, MAX_JSON_BODY_BYTES } from './fetch-json.ts'
 
 const URL_UNDER_TEST = 'https://example.test/raids.min.json'
 
@@ -19,6 +19,16 @@ function fakeFetch(...responses: Array<Response | Error>): typeof fetch & { call
 const noSleep = async (): Promise<void> => {}
 
 describe('fetchJson', () => {
+  it(`refuses a JSON body over ${MAX_JSON_BODY_BYTES} bytes by default, without retrying`, async () => {
+    expect(MAX_JSON_BODY_BYTES).toBe(20 * 1024 * 1024)
+    const oversized = String(MAX_JSON_BODY_BYTES + 1)
+    const fetchImpl = fakeFetch(new Response('[]', { headers: { 'content-length': oversized } }))
+    await expect(fetchJson(URL_UNDER_TEST, { fetchImpl, sleep: noSleep })).rejects.toThrow(
+      `unable to fetch ${URL_UNDER_TEST}: body is over ${MAX_JSON_BODY_BYTES} bytes (not retried)`,
+    )
+    expect(fetchImpl.calls).toBe(1)
+  })
+
   it('returns the parsed body of a 200 response', async () => {
     const fetchImpl = fakeFetch(Response.json([{ name: 'Darkrai' }]))
     await expect(fetchJson(URL_UNDER_TEST, { fetchImpl, sleep: noSleep })).resolves.toEqual([{ name: 'Darkrai' }])

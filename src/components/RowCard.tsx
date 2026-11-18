@@ -24,8 +24,10 @@ export function RowCard({ row, tiers, onCalculate, isInEventGroup = false }: Row
         <NameHeading className="card__name">{row.name}</NameHeading>
         {!isInEventGroup && <span className="card__source">{row.source}</span>}
         {eventEnd !== null && <span className="card__until">{eventEnd}</span>}
-        {/* Most rows are base, so only a different tier earns a chip. */}
-        {row.tier !== null && row.tier !== 'base' && <span className={`chip chip--${row.tier}`}>{tiers[row.tier].label}</span>}
+        {/* Most rows are base, so only a different tier earns a chip, and not one repeating the name ("Dynamax Bulbasaur"). */}
+        {row.tier !== null && row.tier !== 'base' && !row.name.startsWith(`${tiers[row.tier].label} `) && (
+          <span className={`chip chip--${row.tier}`}>{tiers[row.tier].label}</span>
+        )}
       </div>
       {row.denom !== null ? (
         <>

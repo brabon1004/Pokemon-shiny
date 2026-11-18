@@ -20,7 +20,8 @@ function parseCombined(body: unknown, origin: string): Combined {
 }
 
 async function fetchCombined(url: string, fetchFn: typeof fetch, signal?: AbortSignal): Promise<Combined> {
-  const response = await fetchFn(url, { signal })
+  // 'no-cache' checks with the server every time (a cheap 304 when unchanged), so newer code never reads a stale cached file.
+  const response = await fetchFn(url, { signal, cache: 'no-cache' })
   if (!response.ok) throw new Error(`HTTP ${response.status} fetching ${url}`)
   return parseCombined(await response.json(), url)
 }

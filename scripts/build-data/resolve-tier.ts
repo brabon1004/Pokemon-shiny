@@ -3,12 +3,12 @@ import type { Rates } from '../../src/shared/rates.ts'
 
 export interface TierQuery {
   dex: number
-  /** "wild", "research", "egg", or "raid:<ScrapedDuck tier>". */
+  /** "wild", "research", "egg", "raid:<ScrapedDuck tier>", "max:dynamax", or "max:gigantamax". */
   encounterType: string
   canBeShiny: boolean
-  /** The event this row comes from (wild rows only). */
+  /** The event this row comes from (wild and event Max Battle rows). */
   event?: { eventID: string; eventType: string }
-  /** Other events running now whose eventOverrides may apply (raid rows); first listed wins. */
+  /** Other events running now whose eventOverrides may apply (raid and hand-kept Max Battle rows); first listed wins. */
   activeEventIDs?: readonly string[]
 }
 
@@ -45,7 +45,7 @@ function encounterDefault(rates: Rates, encounterType: string): Tier {
   if (encounterType.startsWith('raid:')) return rates.encounterDefaults['raid:default']
   throw new Error(
     `data/rates.json has no encounterDefaults entry for "${encounterType}". This is a build script bug: ` +
-      'normalizers must only use "wild", "research", "egg", or "raid:<tier>".',
+      'normalizers must only use "wild", "research", "egg", "raid:<tier>", "max:dynamax", or "max:gigantamax".',
   )
 }
 

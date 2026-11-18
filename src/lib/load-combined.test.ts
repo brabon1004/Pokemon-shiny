@@ -18,6 +18,12 @@ describe('loadCombined', () => {
     expect(fetchFn).toHaveBeenCalledWith(url, expect.anything())
   })
 
+  it('revalidates with the server instead of using a cached copy, so a deploy shows up on the next visit', async () => {
+    const fetchFn = respondWith(sample)
+    await loadCombined({ url }, fetchFn)
+    expect(fetchFn).toHaveBeenCalledWith(url, expect.objectContaining({ cache: 'no-cache' }))
+  })
+
   it('reports an error for a 404 when there is no sample fallback', async () => {
     const outcome = await loadCombined({ url }, respondWith({}, 404))
     expect(outcome).toEqual({ status: 'error', reason: expect.stringContaining('HTTP 404') })

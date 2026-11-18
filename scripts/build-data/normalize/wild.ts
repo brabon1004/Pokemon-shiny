@@ -58,7 +58,7 @@ export function findWildEvents(
   now: Date,
   onUnparseable: (event: GameEvent) => void = () => {},
 ): DatedEvent[] {
-  return findActiveEvents(events, now, onUnparseable, WILD_LOOK_AHEAD_MS).filter((event) => !NON_EVENT_TYPES.has(event.eventType))
+  return findActiveEvents(events, now, onUnparseable, WINDOWED_ROW_LOOK_AHEAD_MS).filter((event) => !NON_EVENT_TYPES.has(event.eventType))
 }
 
 export interface WildResult extends NormalizeResult {
@@ -131,10 +131,11 @@ function spotlightSpecies(event: GameEvent): SpotlightEntry[] {
 const LOCAL_TIME_SLACK_MS = 14 * 60 * 60 * 1000
 
 /**
- * Wild rows carry their event window and the browser hides them until it starts, so the build also keeps events
- * starting before the next build: the 4-hour schedule interval in deploy.yml plus 2 hours for a late or slow run.
+ * Wild and event Max Battle rows carry their event window and the browser hides them until it starts, so the build
+ * also keeps events starting before the next build: the 4-hour schedule interval in deploy.yml plus 2 hours for a
+ * late or slow run.
  */
-const WILD_LOOK_AHEAD_MS = 6 * 60 * 60 * 1000
+export const WINDOWED_ROW_LOOK_AHEAD_MS = 6 * 60 * 60 * 1000
 
 /**
  * Events running at `now`, or starting within `lookAheadMs` after it. Null-dated or unparseable events are left

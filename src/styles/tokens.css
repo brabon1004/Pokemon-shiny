@@ -36,6 +36,10 @@
   --chip-legendary-fg: #f6d27a;
   --chip-raid-day-bg: #4d2420;
   --chip-raid-day-fg: #ffb4a6;
+  --chip-dynamax-bg: #4f1840;
+  --chip-dynamax-fg: #ffb0e6;
+  --chip-gigantamax-bg: #5a1530;
+  --chip-gigantamax-fg: #ffc2d4;
 
   /* Type */
   --font-body: Inter, system-ui, sans-serif;
