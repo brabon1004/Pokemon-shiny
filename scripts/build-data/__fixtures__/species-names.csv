@@ -1,0 +1,217 @@
+pokemon_species_id,local_language_id,name,genus
+1,1,フシギダネ,たねポケモン
+1,2,Fushigidane,
+1,3,이상해씨,씨앗포켓몬
+1,4,妙蛙種子,種子寶可夢
+1,5,Bulbizarre,Pokémon Graine
+1,6,Bisasam,Samen-Pokémon
+1,7,Bulbasaur,Pokémon Semilla
+1,8,Bulbasaur,Pokémon Seme
+1,9,Bulbasaur,Seed Pokémon
+1,11,フシギダネ,たねポケモン
+1,12,妙蛙种子,种子宝可梦
+1,14,Bulbasaur,Pokémon Semilla
+2,1,フシギソウ,たねポケモン
+2,2,Fushigisou,
+2,3,이상해풀,씨앗포켓몬
+2,4,妙蛙草,種子寶可夢
+2,5,Herbizarre,Pokémon Graine
+2,6,Bisaknosp,Samen-Pokémon
+2,7,Ivysaur,Pokémon Semilla
+2,8,Ivysaur,Pokémon Seme
+2,9,Ivysaur,Seed Pokémon
+2,11,フシギソウ,たねポケモン
+2,12,妙蛙草,种子宝可梦
+2,14,Ivysaur,Pokémon Semilla
+3,1,フシギバナ,たねポケモン
+3,2,Fushigibana,
+3,3,이상해꽃,씨앗포켓몬
+3,4,妙蛙花,種子寶可夢
+3,5,Florizarre,Pokémon Graine
+3,6,Bisaflor,Samen-Pokémon
+3,7,Venusaur,Pokémon Semilla
+3,8,Venusaur,Pokémon Seme
+3,9,Venusaur,Seed Pokémon
+3,11,フシギバナ,たねポケモン
+3,12,妙蛙花,种子宝可梦
+3,14,Venusaur,Pokémon Semilla
+6,1,リザードン,かえんポケモン
+6,2,Lizardon,
+6,3,리자몽,화염포켓몬
+6,4,噴火龍,火焰寶可夢
+6,5,Dracaufeu,Pokémon Flamme
+6,6,Glurak,Flammen-Pokémon
+6,7,Charizard,Pokémon Llama
+6,8,Charizard,Pokémon Fiamma
+6,9,Charizard,Flame Pokémon
+6,11,リザードン,かえんポケモン
+6,12,喷火龙,火焰宝可梦
+6,14,Charizard,Pokémon Llama
+25,1,ピカチュウ,ねずみポケモン
+25,2,Pikachu,
+25,3,피카츄,쥐포켓몬
+25,4,皮卡丘,鼠寶可夢
+25,5,Pikachu,Pokémon Souris
+25,6,Pikachu,Maus-Pokémon
+25,7,Pikachu,Pokémon Ratón
+25,8,Pikachu,Pokémon Topo
+25,9,Pikachu,Mouse Pokémon
+25,11,ピカチュウ,ねずみポケモン
+25,12,皮卡丘,鼠宝可梦
+25,14,Pikachu,Pokémon Ratón
+36,1,ピクシー,ようせいポケモン
+36,2,Pixy,
+36,3,픽시,요정포켓몬
+36,4,皮可西,妖精寶可夢
+36,5,Mélodelfe,Pokémon Fée
+36,6,Pixi,Feen-Pokémon
+36,7,Clefable,Pokémon Hada
+36,8,Clefable,Pokémon Fata
+36,9,Clefable,Fairy Pokémon
+36,11,ピクシー,ようせいポケモン
+36,12,皮可西,妖精宝可梦
+36,14,Clefable,Pokémon Hada
+52,1,ニャース,ばけねこポケモン
+52,2,Nyarth,
+52,3,나옹,요괴고양이포켓몬
+52,4,喵喵,妖怪貓寶可夢
+52,5,Miaouss,Pokémon Chadégout
+52,6,Mauzi,Katzen-Pokémon
+52,7,Meowth,Pokémon Gato Araña
+52,8,Meowth,Pokémon Graffimiao
+52,9,Meowth,Scratch Cat Pokémon
+52,11,ニャース,ばけねこポケモン
+52,12,喵喵,妖怪猫宝可梦
+52,14,Meowth,Pokémon Gato Araña
+58,1,ガーディ,こいぬポケモン
+58,2,Gardie,
+58,3,가디,강아지포켓몬
+58,4,卡蒂狗,小狗寶可夢
+58,5,Caninos,Pokémon Chiot
+58,6,Fukano,Welpen-Pokémon
+58,7,Growlithe,Pokémon Perrito
+58,8,Growlithe,Pokémon Cagnolino
+58,9,Growlithe,Puppy Pokémon
+58,11,ガーディ,こいぬポケモン
+58,12,卡蒂狗,小狗宝可梦
+58,14,Growlithe,Pokémon Perrito
+129,1,コイキング,さかなポケモン
+129,2,Koiking,
+129,3,잉어킹,물고기포켓몬
+129,4,鯉魚王,魚寶可夢
+129,5,Magicarpe,Pokémon Poisson
+129,6,Karpador,Fisch-Pokémon
+129,7,Magikarp,Pokémon Pez
+129,8,Magikarp,Pokémon Pesce
+129,9,Magikarp,Fish Pokémon
+129,11,コイキング,さかなポケモン
+129,12,鲤鱼王,鱼宝可梦
+129,14,Magikarp,Pokémon Pez
+194,1,ウパー,みずうおポケモン
+194,2,Upah,
+194,3,우파,수어포켓몬
+194,4,烏波,水魚寶可夢
+194,5,Axoloto,Pokémon Poisson
+194,6,Felino,Fisch-Pokémon
+194,7,Wooper,Pokémon Pez Agua
+194,8,Wooper,Pokémon Acquapesce
+194,9,Wooper,Water Fish Pokémon
+194,11,ウパー,みずうおポケモン
+194,12,乌波,水鱼宝可梦
+194,14,Wooper,Pokémon Pez Agua
+201,1,アンノーン,シンボルポケモン
+201,2,Unknown,
+201,3,안농,심볼포켓몬
+201,4,未知圖騰,象徵寶可夢
+201,5,Zarbi,Pokémon Symbolique
+201,6,Icognito,Symbol
+201,7,Unown,Pokémon Símbolo
+201,8,Unown,Pokémon Simbolo
+201,9,Unown,Symbol Pokémon
+201,11,アンノーン,シンボルポケモン
+201,12,未知图腾,象征宝可梦
+201,14,Unown,Pokémon Símbolo
+202,1,ソーナンス,がまんポケモン
+202,2,Sonans,
+202,3,마자용,참기포켓몬
+202,4,果然翁,忍耐寶可夢
+202,5,Qulbutoké,Pokémon Patient
+202,6,Woingenau,Gedulds-Pokémon
+202,7,Wobbuffet,Pokémon Paciente
+202,8,Wobbuffet,Pokémon Pazienza
+202,9,Wobbuffet,Patient Pokémon
+202,11,ソーナンス,がまんポケモン
+202,12,果然翁,忍耐宝可梦
+202,14,Wobbuffet,Pokémon Paciente
+354,1,ジュペッタ,ぬいぐるみポケモン
+354,2,Juppeta,
+354,3,다크펫,봉제인형포켓몬
+354,4,詛咒娃娃,布偶寶可夢
+354,5,Branette,Pokémon Marionnette
+354,6,Banette,Marionette
+354,7,Banette,Pokémon Marioneta
+354,8,Banette,Pokémon Marionetta
+354,9,Banette,Marionette Pokémon
+354,11,ジュペッタ,ぬいぐるみポケモン
+354,12,诅咒娃娃,布偶宝可梦
+354,14,Banette,Pokémon Marioneta
+488,1,クレセリア,みかづきポケモン
+488,2,Cresselia,
+488,3,크레세리아,초승달포켓몬
+488,4,克雷色利亞,新月寶可夢
+488,5,Cresselia,Pokémon Lunaire
+488,6,Cresselia,Lunar-Pokémon
+488,7,Cresselia,Pokémon Lunar
+488,8,Cresselia,Pokémon Falcato
+488,9,Cresselia,Lunar Pokémon
+488,11,クレセリア,みかづきポケモン
+488,12,克雷色利亚,新月宝可梦
+488,14,Cresselia,Pokémon Lunar
+491,1,ダークライ,あんこくポケモン
+491,2,Darkrai,
+491,3,다크라이,암흑포켓몬
+491,4,達克萊伊,暗黑寶可夢
+491,5,Darkrai,Pokémon Noirtotal
+491,6,Darkrai,Dunkelnacht
+491,7,Darkrai,Pokémon Oscuridad
+491,8,Darkrai,Pokémon Neropesto
+491,9,Darkrai,Pitch-Black Pokémon
+491,11,ダークライ,あんこくポケモン
+491,12,达克莱伊,暗黑宝可梦
+491,14,Darkrai,Pokémon Oscuridad
+624,1,コマタナ,はものポケモン
+624,2,Komatana,
+624,3,자망칼,날붙이포켓몬
+624,4,駒刀小兵,利器寶可夢
+624,5,Scalpion,Pokémon Coupant
+624,6,Gladiantri,Stahlklingen-Pokémon
+624,7,Pawniard,Pokémon Tajo
+624,8,Pawniard,Pokémon Lamaffilata
+624,9,Pawniard,Sharp Blade Pokémon
+624,11,コマタナ,はものポケモン
+624,12,驹刀小兵,利器宝可梦
+624,14,Pawniard,Pokémon Tajo
+625,1,キリキザン,とうじんポケモン
+625,2,Kirikizan,
+625,3,절각참,도인포켓몬
+625,4,劈斬司令,刀刃寶可夢
+625,5,Scalproie,Pokémon Tranchant
+625,6,Caesurio,Schwertklingen-Pokémon
+625,7,Bisharp,Pokémon Filo
+625,8,Bisharp,Pokémon Fildilama
+625,9,Bisharp,Sword Blade Pokémon
+625,11,キリキザン,とうじんポケモン
+625,12,劈斩司令,刀刃宝可梦
+625,14,Bisharp,Pokémon Filo
+983,1,ドドゲザン,だいとうポケモン
+983,2,Dodogezan,
+983,3,대도각참,대도포켓몬
+983,4,仆斬將軍,大刀寶可夢
+983,5,Scalpereur,Pourfendant
+983,6,Gladimperio,Langschwert
+983,7,Kingambit,
+983,8,Kingambit,
+983,9,Kingambit,Big Blade Pokémon
+983,11,ドドゲザン,
+983,12,仆刀将军,大刀宝可梦
+983,14,Kingambit,

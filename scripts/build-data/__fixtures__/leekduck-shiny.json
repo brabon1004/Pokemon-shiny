@@ -1,0 +1,348 @@
+[
+ {
+  "dex": 1,
+  "family": "Bulbasaur",
+  "released_date": "2018/03/25",
+  "aa_fn": "pm1"
+ },
+ {
+  "dex": 2,
+  "family": "Bulbasaur",
+  "released_date": "2018/03/25",
+  "aa_fn": "pm2"
+ },
+ {
+  "dex": 3,
+  "family": "Bulbasaur",
+  "released_date": "2018/03/25",
+  "aa_fn": "pm3"
+ },
+ {
+  "dex": 3,
+  "family": "Bulbasaur",
+  "released_date": "2018/03/25",
+  "aa_fn": "pm3.fMEGA",
+  "isotope": "_pm3.fMEGA",
+  "name_suffix": "(M)"
+ },
+ {
+  "dex": 1,
+  "family": "Bulbasaur_c19",
+  "released_date": "2019/10/17",
+  "aa_fn": "pm1.fFALL_2019",
+  "isotope": "_pm1.fFALL_2019",
+  "name_suffix": "Shedinja\ncostume"
+ },
+ {
+  "dex": 1,
+  "family": "Bulbasaur_c20_1",
+  "released_date": "2020/02/25",
+  "aa_fn": "pm1.cJAN_2020_NOEVOLVE",
+  "isotope": "_pm1.cJAN_2020_NOEVOLVE",
+  "name_suffix": "Party\nHat"
+ },
+ {
+  "dex": 1,
+  "family": "Bulbasaur_c20_2",
+  "released_date": "2020/07/25",
+  "aa_fn": "pm1.cSPRING_2020_NOEVOLVE",
+  "isotope": "_pm1.cSPRING_2020_NOEVOLVE",
+  "name_suffix": "Pikachu\nVisor"
+ },
+ {
+  "dex": 3,
+  "family": "Bulbasaur",
+  "released_date": "2024/10/26",
+  "aa_fn": "pm3.fGIGANTAMAX",
+  "isotope": "_pm3.fGIGANTAMAX",
+  "name_suffix": "(GM)"
+ },
+ {
+  "dex": 2,
+  "family": "Bulbasaur_c20_1",
+  "released_date": "2025/07/01",
+  "aa_fn": "pm2.cJAN_2020_NOEVOLVE",
+  "isotope": "_pm2.cJAN_2020_NOEVOLVE",
+  "name_suffix": "Party\nHat"
+ },
+ {
+  "dex": 3,
+  "family": "Bulbasaur_c20_1",
+  "released_date": "2025/07/01",
+  "aa_fn": "pm3.cJAN_2020_NOEVOLVE",
+  "isotope": "_pm3.cJAN_2020_NOEVOLVE",
+  "name_suffix": "Party\nHat"
+ },
+ {
+  "dex": 2,
+  "family": "Bulbasaur_c20_2",
+  "released_date": "2026/06/05",
+  "aa_fn": "pm2.cSPRING_2020_NOEVOLVE",
+  "isotope": "_pm2.cSPRING_2020_NOEVOLVE",
+  "name_suffix": "Pikachu\nVisor"
+ },
+ {
+  "dex": 3,
+  "family": "Bulbasaur_c20_2",
+  "released_date": "2026/06/05",
+  "aa_fn": "pm3.cSPRING_2020_NOEVOLVE",
+  "isotope": "_pm3.cSPRING_2020_NOEVOLVE",
+  "name_suffix": "Pikachu\nVisor"
+ },
+ {
+  "dex": 6,
+  "family": "Charmander",
+  "released_date": "2018/05/19",
+  "aa_fn": "pm6",
+  "style": "--t: -5%"
+ },
+ {
+  "dex": 6,
+  "family": "Charmander",
+  "released_date": "2018/05/19",
+  "aa_fn": "pm6.fMEGA_X",
+  "isotope": "_pm6.fMEGA_X",
+  "name_suffix": "(M-X)",
+  "style": "--t: -0%"
+ },
+ {
+  "dex": 6,
+  "family": "Charmander",
+  "released_date": "2018/05/19",
+  "aa_fn": "pm6.fMEGA_Y",
+  "isotope": "_pm6.fMEGA_Y",
+  "name_suffix": "(M-Y)",
+  "style": "--t: -0%"
+ },
+ {
+  "dex": 6,
+  "family": "Charmander_c20_1",
+  "released_date": "2022/07/06",
+  "aa_fn": "pm6.cJAN_2020_NOEVOLVE",
+  "isotope": "_pm6.cJAN_2020_NOEVOLVE",
+  "name_suffix": "Party\nHat",
+  "style": "--t: -5%"
+ },
+ {
+  "dex": 6,
+  "family": "Charmander",
+  "released_date": "2024/10/26",
+  "aa_fn": "pm6.fGIGANTAMAX",
+  "isotope": "_pm6.fGIGANTAMAX",
+  "name_suffix": "(GM)",
+  "style": "--w: 115%; --t: -10%"
+ },
+ {
+  "dex": 6,
+  "family": "Charmander_c20_2",
+  "released_date": "2026/06/12",
+  "aa_fn": "pm6.cSPRING_2020_NOEVOLVE",
+  "isotope": "_pm6.cSPRING_2020_NOEVOLVE",
+  "name_suffix": "Pikachu\nVisor",
+  "style": "--t: -0%"
+ },
+ {
+  "dex": 6,
+  "family": "Charmander_c26",
+  "released_date": "2026/09/16",
+  "aa_fn": "pm6.fGOGGLES_2026",
+  "isotope": "_pm6.fGOGGLES_2026",
+  "name_suffix": "Goggles",
+  "style": "--t: -5%"
+ },
+ {
+  "dex": 25,
+  "family": "Pikachu_20161225",
+  "released_date": "2016/12/25",
+  "aa_fn": "pm25.cHOLIDAY_2016",
+  "isotope": "_pm25.cHOLIDAY_2016",
+  "name_suffix": "Holiday\nHat"
+ },
+ {
+  "dex": 25,
+  "family": "Pikachu_20170226",
+  "released_date": "2017/02/26",
+  "aa_fn": "pm25.cANNIVERSARY",
+  "isotope": "_pm25.cANNIVERSARY",
+  "name_suffix": "Party Hat"
+ },
+ {
+  "dex": 25,
+  "family": "Pikachu_20170606",
+  "released_date": "2017/06/06",
+  "aa_fn": "pm25.cONE_YEAR_ANNIVERSARY",
+  "isotope": "_pm25.cONE_YEAR_ANNIVERSARY",
+  "name_suffix": "Original\nCap"
+ },
+ {
+  "dex": 25,
+  "family": "Pikachu_20170815",
+  "released_date": "2017/08/09",
+  "aa_fn": "pm25"
+ },
+ {
+  "dex": 52,
+  "family": "Meowth_A",
+  "released_date": "2019/06/28",
+  "aa_fn": "pm52.fALOLA",
+  "isotope": "_pm52.fALOLA",
+  "name_suffix": "(A)"
+ },
+ {
+  "dex": 52,
+  "family": "Meowth",
+  "released_date": "2019/11/07",
+  "aa_fn": "pm52"
+ },
+ {
+  "dex": 52,
+  "family": "Meowth_G",
+  "released_date": "2021/08/20",
+  "aa_fn": "pm52.fGALARIAN",
+  "isotope": "_pm52.fGALARIAN",
+  "name_suffix": "(G)"
+ },
+ {
+  "dex": 52,
+  "family": "Meowth",
+  "released_date": "2026/02/15",
+  "aa_fn": "pm52.fGIGANTAMAX",
+  "isotope": "_pm52.fGIGANTAMAX",
+  "name_suffix": "(GM)",
+  "style": "--w: 100%; --l: 20%; --t: 0%"
+ },
+ {
+  "dex": 58,
+  "family": "Growlithe",
+  "released_date": "2018/09/01",
+  "aa_fn": "pm58"
+ },
+ {
+  "dex": 58,
+  "family": "Growlithe_2",
+  "released_date": "2023/09/27",
+  "aa_fn": "pm58.fHISUIAN",
+  "isotope": "_pm58.fHISUIAN",
+  "name_suffix": "(H)"
+ },
+ {
+  "dex": 194,
+  "family": "Wooper",
+  "released_date": "2020/12/11",
+  "aa_fn": "pm194"
+ },
+ {
+  "dex": 194,
+  "family": "Wooper_P",
+  "released_date": "2023/11/05",
+  "aa_fn": "pm194.fPALDEA",
+  "isotope": "_pm194.fPALDEA"
+ },
+ {
+  "dex": 194,
+  "family": "Wooper_1",
+  "released_date": "2023/11/15",
+  "aa_fn": "pm194.cFALL_2023",
+  "isotope": "_pm194.cFALL_2023",
+  "name_suffix": "Fashionable"
+ },
+ {
+  "dex": 201,
+  "family": "Unown",
+  "released_date": "2020/07/25",
+  "aa_fn": "pm201.fUNOWN_G",
+  "isotope": "_pm201.fUNOWN_G",
+  "name_suffix": "(G)",
+  "order": 7,
+  "style": "--t: -15%"
+ },
+ {
+  "dex": 201,
+  "family": "Unown",
+  "released_date": "2020/08/07",
+  "aa_fn": "pm201.fUNOWN_A",
+  "isotope": "_pm201.fUNOWN_A",
+  "name_suffix": "(A)",
+  "order": 1,
+  "style": "--t: -15%"
+ },
+ {
+  "dex": 201,
+  "family": "Unown",
+  "released_date": "2022/08/27",
+  "aa_fn": "pm201.fUNOWN_P",
+  "isotope": "_pm201.fUNOWN_P",
+  "name_suffix": "(P)",
+  "order": 16,
+  "style": "--t: -15%"
+ },
+ {
+  "dex": 202,
+  "family": "Wobbuffet",
+  "released_date": "2018/03/22",
+  "aa_fn": "pm202",
+  "name_suffix": "(♂)",
+  "style": "--w: 125%; --t: -15%"
+ },
+ {
+  "dex": 202,
+  "family": "Wobbuffet",
+  "released_date": "2018/03/22",
+  "aa_fn": "pm202.g2",
+  "isotope": "_pm202.g2",
+  "name_suffix": "(♀)",
+  "style": "--w: 125%; --t: -15%"
+ },
+ {
+  "dex": 202,
+  "family": "Wobbuffet_c",
+  "released_date": "2018/03/22",
+  "aa_fn": "pm202.cJAN_2020_NOEVOLVE",
+  "isotope": "_pm202.cJAN_2020_NOEVOLVE",
+  "name_suffix": "(♂)\nParty\nHat",
+  "style": "--w: 125%; --t: -15%"
+ },
+ {
+  "dex": 202,
+  "family": "Wobbuffet_c",
+  "released_date": "2018/03/22",
+  "aa_fn": "pm202.cJAN_2020_NOEVOLVE.g2",
+  "isotope": "_pm202.cJAN_2020_NOEVOLVE.g2",
+  "name_suffix": "(♀)\nParty\nHat",
+  "style": "--w: 125%; --t: -15%"
+ },
+ {
+  "dex": 624,
+  "family": "Pawniard",
+  "released_date": "2022/11/14",
+  "aa_fn": "pm624"
+ },
+ {
+  "dex": 625,
+  "family": "Pawniard",
+  "released_date": "2022/11/14",
+  "aa_fn": "pm625"
+ },
+ {
+  "dex": 983,
+  "family": "Pawniard",
+  "released_date": "2025/05/10",
+  "aa_fn": "pm983"
+ },
+ {
+  "dex": 25,
+  "family": "Pikachu_20260912",
+  "released_date": "2027/02/13",
+  "aa_fn": "pm25.fANNIVERSARY_2026_THAILAND_01",
+  "isotope": "_pm25.fANNIVERSARY_2026_THAILAND_01",
+  "name_suffix": "PokéXciting!\nBangkok"
+ },
+ {
+  "dex": 36,
+  "family": "Clefairy",
+  "released_date": "2026/11/28",
+  "aa_fn": "pm36.fMEGA",
+  "isotope": "_pm36.fMEGA",
+  "name_suffix": "(M)"
+ }
+]

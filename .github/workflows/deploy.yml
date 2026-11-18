@@ -1,0 +1,66 @@
+name: Build and deploy
+
+# The live site always builds from `prod`. Day-to-day work happens on `main`, which never deploys.
+on:
+  push:
+    branches: [prod]
+  # Every 4 hours, off the top of the hour to avoid the scheduler's busiest minute.
+  # GitHub runs schedules from the default branch, so checkout below pins `prod` explicitly.
+  schedule:
+    - cron: '17 */4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Queue rather than cancel, so a scheduled data refresh never aborts a deploy already in progress.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      pages: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: prod
+          persist-credentials: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+
+      # Writes public/data/combined.json, which Vite copies into dist/data/.
+      # If this fails, nothing is uploaded and the last good deploy stays live.
+      - run: npm run build:data
+      - run: npm run build
+
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: ./dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

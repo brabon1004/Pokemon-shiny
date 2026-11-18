@@ -1,0 +1,92 @@
+// Pure assembly of combined.json from already-validated upstream data. index.ts does the I/O.
+import type { Combined } from '../../src/shared/contract.ts'
+import type { Rates } from '../../src/shared/rates.ts'
+import type { SpeciesNames } from './names.ts'
+import type { SkippedEntry } from './normalize/common.ts'
+import { normalizeEggs } from './normalize/eggs.ts'
+import { normalizeRaids } from './normalize/raids.ts'
+import { normalizeResearch } from './normalize/research.ts'
+import { normalizeShinyList } from './normalize/shiny-list.ts'
+import { findActiveEvents, normalizeWild } from './normalize/wild.ts'
+import type { EggHatch, GameEvent, RaidBoss, ResearchTask, ShinyListEntry } from './upstream-schemas.ts'
+
+export interface BuildInput {
+  rates: Rates
+  names: SpeciesNames
+  raids: readonly RaidBoss[]
+  eggs: readonly EggHatch[]
+  research: readonly ResearchTask[]
+  events: readonly GameEvent[]
+  shinyList: readonly ShinyListEntry[]
+  now: Date
+}
+
+/** Fewer rows than this means an upstream feed is broken, so the build fails and the last deploy stays live. */
+export interface RowMinimums {
+  raids: number
+  eggs: number
+  all: number
+}
+export const LIVE_ROW_MINIMUMS: RowMinimums = { raids: 1, eggs: 1, all: 500 }
+
+export interface BuildOutput {
+  combined: Combined
+  skipped: SkippedEntry[]
+  /** Problems that did not stop the build but mean some rows may be missing or rated by a fallback. */
+  warnings: string[]
+}
+
+export function buildCombined(input: BuildInput, minimums: RowMinimums = LIVE_ROW_MINIMUMS): BuildOutput {
+  const { rates, names, now } = input
+  assertOverridesNameKnownSpecies(rates, names)
+  const activeEventIDs = findActiveEvents(input.events, now).map((event) => event.eventID)
+  const wild = normalizeWild(input.events, rates, names, now)
+  const raids = normalizeRaids(input.raids, rates, activeEventIDs)
+  const eggs = normalizeEggs(input.eggs, rates)
+  const research = normalizeResearch(input.research, rates)
+  const all = normalizeShinyList(input.shinyList, rates, names, now)
+
+  const combined: Combined = {
+    schemaVersion: 1,
+    generatedAt: now.toISOString(),
+    ratesUpdated: rates.updated,
+    tiers: rates.tiers,
+    wild: wild.rows,
+    raids: raids.rows,
+    eggs: eggs.rows,
+    research: research.rows,
+    all: all.rows,
+  }
+  assertRowMinimums(combined, minimums)
+  const warnings: string[] = []
+  if (raids.unmappedTiers.length > 0) {
+    warnings.push(`Unmapped raid tiers (using raid:default): ${raids.unmappedTiers.join(', ')}`)
+  }
+  if (wild.unparseableEvents.length > 0) {
+    const count = wild.unparseableEvents.length
+    warnings.push(`Ignored ${count} event${count === 1 ? '' : 's'} with unparseable dates: ${wild.unparseableEvents.join('; ')}`)
+  }
+  return { combined, skipped: [wild, raids, eggs, research, all].flatMap((result) => result.skipped), warnings }
+}
+
+/** A typo in a hand-edited override would otherwise silently match nothing. */
+function assertOverridesNameKnownSpecies(rates: Rates, names: SpeciesNames): void {
+  const problems: string[] = []
+  const unknownSpeciesKeys = Object.keys(rates.speciesOverrides).filter((dex) => names[dex] === undefined)
+  if (unknownSpeciesKeys.length > 0) problems.push(`speciesOverrides ${unknownSpeciesKeys.join(', ')}`)
+  for (const [eventID, override] of Object.entries(rates.eventOverrides)) {
+    const unknownDex = override.dex.filter((dex) => names[String(dex)] === undefined)
+    if (unknownDex.length > 0) problems.push(`eventOverrides.${eventID} ${unknownDex.join(', ')}`)
+  }
+  if (problems.length > 0) {
+    throw new Error(`data/rates.json references dex numbers not in data/species-names.json: ${problems.join(', ')}`)
+  }
+}
+
+function assertRowMinimums(combined: Combined, minimums: RowMinimums): void {
+  const tabs: ReadonlyArray<keyof RowMinimums> = ['raids', 'eggs', 'all']
+  const shortTabs = tabs
+    .filter((tab) => combined[tab].length < minimums[tab])
+    .map((tab) => `${tab} has ${combined[tab].length} rows (minimum ${minimums[tab]})`)
+  if (shortTabs.length > 0) throw new Error(`sanity check failed: ${shortTabs.join('; ')}`)
+}

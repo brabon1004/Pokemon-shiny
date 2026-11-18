@@ -1,0 +1,26 @@
+{
+  "updated": "2026-11-18",
+  "tiers": {
+    "base": { "label": "Base", "denom": 512 },
+    "event": { "label": "Event boosted", "denom": 128 },
+    "boosted": { "label": "Boosted", "denom": 64 },
+    "comm_day": { "label": "Community Day", "denom": 25 },
+    "legendary": { "label": "Legendary", "denom": 20 },
+    "raid_day": { "label": "Raid Day", "denom": 10 }
+  },
+  "encounterDefaults": {
+    "wild": "base",
+    "research": "base",
+    "egg": "boosted",
+    "raid:1-Star Raids": "boosted",
+    "raid:3-Star Raids": "boosted",
+    "raid:Mega Raids": "boosted",
+    "raid:5-Star Raids": "legendary",
+    "raid:default": "boosted"
+  },
+  "eventTypeDefaults": {
+    "community-day": "comm_day"
+  },
+  "speciesOverrides": {},
+  "eventOverrides": {}
+}

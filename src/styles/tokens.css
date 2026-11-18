@@ -1,0 +1,55 @@
+/* Design tokens ported from the mockup. The planned Pokémon-themed restyle should only need to change this file. */
+:root {
+  color-scheme: dark;
+
+  /* Surfaces */
+  --color-ground: #12141c;
+  --color-surface: #1b1f2b;
+  --color-tile: #232838;
+  --color-border: #2b3142;
+  --color-border-strong: #3a4258;
+  /* Input outlines: the mockup's #3A4258 is 1.6:1 on cards, below the 3:1 minimum for control boundaries. */
+  --color-control-border: #68728e;
+
+  /* Text */
+  --color-text: #e8eaf0;
+  --color-text-soft: #d5dbe6;
+  --color-text-muted: #a7b0c2;
+  --color-link: #a9d2ff;
+  --color-link-hover: #d3e8ff;
+  --color-error: #ffb4a6;
+
+  /* Accent */
+  --color-accent: #f2c14e;
+  --color-on-accent: #14161f;
+
+  /* Tier chips (text contrast on chip background, all ≥ 7.5:1) */
+  --chip-base-bg: #2a3142;
+  --chip-base-fg: #d5dbe6;
+  --chip-event-bg: #3a2a55;
+  --chip-event-fg: #d9c2ff;
+  --chip-boosted-bg: #17365c;
+  --chip-boosted-fg: #a9d2ff;
+  --chip-comm-day-bg: #163f33;
+  --chip-comm-day-fg: #9de5c4;
+  --chip-legendary-bg: #4a3a12;
+  --chip-legendary-fg: #f6d27a;
+  --chip-raid-day-bg: #4d2420;
+  --chip-raid-day-fg: #ffb4a6;
+
+  /* Type */
+  --font-body: Inter, system-ui, sans-serif;
+  --font-pixel: 'Pixelify Sans', 'Courier New', monospace;
+  /* Pixelify Sans digits are ambiguous (2, 5 and 8 look alike), so numbers use the body face. */
+  --font-number: var(--font-body);
+  --font-mono: ui-monospace, 'Courier New', monospace;
+
+  /* Shape and spacing */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
+  --space-page-x: clamp(16px, 3vw, 40px);
+  --touch-target: 44px;
+  --sidebar-width: 300px;
+}
