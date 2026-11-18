@@ -38,6 +38,14 @@ input {
   font: inherit;
 }
 
+/* Taps get :active feedback instead of the grey WebKit flash; keyboard focus still shows the ring. */
+a,
+button,
+summary {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -150,6 +158,8 @@ input {
 }
 
 .search__input {
+  -webkit-appearance: none;
+  appearance: none;
   width: 240px;
   max-width: 100%;
   padding: 0 14px;
@@ -174,7 +184,8 @@ input {
   background: transparent;
   color: var(--color-text);
 }
-.button--ghost:hover {
+.button--ghost:hover,
+.button--ghost:active {
   border-color: var(--color-control-border);
   background: var(--color-tile);
 }
@@ -294,6 +305,34 @@ input {
   color: var(--color-text-muted);
 }
 
+/* Wild tab: one heading per event, carrying the name and end time its rows share. */
+
+.event-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.event-group + .event-group {
+  margin-top: 8px;
+}
+.event-group__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 2px 12px;
+}
+.event-group__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.event-group__until {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
 /* Cards */
 
 .card-grid {
@@ -303,6 +342,7 @@ input {
 }
 
 .card {
+  position: relative;
   min-width: 0;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -340,7 +380,8 @@ input {
   overflow-wrap: anywhere;
 }
 
-.card__source {
+.card__source,
+.card__until {
   font-size: 13px;
   color: var(--color-text-muted);
 }
@@ -373,6 +414,9 @@ input {
   font-size: 15px;
   font-weight: 600;
   color: var(--color-text-muted);
+}
+.card__unavailable-short {
+  display: none;
 }
 
 .card__foot {
@@ -469,10 +513,17 @@ input {
 
 /* Calculator */
 
-.calculator__summary-line,
-.calculator__summary-chance,
-.calculator__toggle {
-  display: none;
+.calculator__header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.calculator__subtitle {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text-soft);
+  overflow-wrap: anywhere;
 }
 
 .calculator__body {
@@ -580,6 +631,125 @@ input {
   color: var(--color-text-muted);
 }
 
+/* Phones fold the legend into a disclosure; only the summary row shows until it is opened. */
+.legend--collapsible {
+  padding: 0;
+  gap: 0;
+}
+.legend__summary {
+  min-height: 52px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-radius: var(--radius-xl);
+  font-size: 15px;
+  font-weight: 600;
+  list-style: none;
+  cursor: pointer;
+}
+.legend__summary::-webkit-details-marker {
+  display: none;
+}
+.legend__summary::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  margin-right: 4px;
+  border-right: 2px solid var(--color-text-muted);
+  border-bottom: 2px solid var(--color-text-muted);
+  transform: translateY(-2px) rotate(45deg);
+}
+.legend--collapsible[open] > .legend__summary::after {
+  transform: translateY(2px) rotate(225deg);
+}
+.legend--collapsible .legend__list {
+  padding: 4px 16px 14px;
+}
+.legend--collapsible .legend__note {
+  padding: 0 16px 16px;
+}
+
+/* Calculator sheet (phones). A native modal <dialog>: the browser traps focus and handles Escape. */
+
+.sheet {
+  inset: auto 0 0;
+  width: 100%;
+  max-width: none;
+  max-height: calc(100dvh - env(safe-area-inset-top) - 24px);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-top: 1px solid var(--color-border-strong);
+  border-radius: 16px 16px 0 0;
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: 0 -12px 32px rgb(0 0 0 / 50%);
+}
+.sheet[open] {
+  display: flex;
+  flex-direction: column;
+}
+.sheet::backdrop {
+  background: rgb(8 9 14 / 65%);
+}
+
+.sheet__body {
+  position: relative;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 16px max(16px, env(safe-area-inset-right)) calc(20px + env(safe-area-inset-bottom))
+    max(16px, env(safe-area-inset-left));
+}
+/* Grab handle: decoration that says "sheet", not a drag control. */
+.sheet__body::before {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  width: 36px;
+  height: 4px;
+  margin-left: -18px;
+  border-radius: 2px;
+  background: var(--color-border-strong);
+}
+
+.sheet__close {
+  position: absolute;
+  top: 12px;
+  right: max(12px, env(safe-area-inset-right));
+  width: var(--touch-target);
+  height: var(--touch-target);
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: var(--color-tile);
+  color: var(--color-text);
+  cursor: pointer;
+}
+.sheet__close:active {
+  background: var(--color-border-strong);
+}
+
+.sheet .calculator {
+  padding: 0;
+  border: 0;
+  background: none;
+}
+.sheet .panel__title {
+  min-height: var(--touch-target);
+  padding-right: 56px;
+  display: flex;
+  align-items: center;
+}
+
+/* The page behind an open sheet should not scroll under the reader's thumb. */
+html:has(.sheet[open]) {
+  overflow: hidden;
+}
+
 /* Footer */
 
 .site-footer {
@@ -596,22 +766,48 @@ input {
   font-weight: 700;
 }
 
-/* Phones: compact cards and the calculator as a collapsible card pinned to the bottom */
+/* Phones, upright or sideways: sticky header, list rows, and the tabs as a bottom bar. Same query as
+   COMPACT_LAYOUT_QUERY in useCompactLayout.ts; a test keeps the two in sync. */
 
-@media (max-width: 719.98px) {
-  /* Keep focused cards clear of the sticky calculator pinned to the bottom. */
+@media (max-width: 719.98px), (max-height: 500px) {
   html {
-    scroll-padding-bottom: 160px;
+    /* Keep focused rows clear of the sticky header and the bottom tab bar. */
+    scroll-padding-top: 136px;
+    scroll-padding-bottom: calc(var(--tab-bar-height) + env(safe-area-inset-bottom) + 12px);
   }
   .page {
-    padding: 20px 16px;
+    padding: 0 16px calc(var(--tab-bar-height) + env(safe-area-inset-bottom) + 24px);
   }
   .page__inner {
     gap: 16px;
   }
+  .status-screen {
+    padding-top: max(20px, env(safe-area-inset-top));
+  }
 
+  /* Header: title, freshness and the calculator button, with search below, pinned while scrolling. */
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: var(--layer-header);
+    margin: 0 -16px;
+    padding: max(12px, env(safe-area-inset-top)) 16px 12px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'brand calculator'
+      'updated calculator'
+      'search search';
+    align-items: center;
+    column-gap: 12px;
+    row-gap: 2px;
+    background: var(--color-ground);
+    border-bottom: 1px solid var(--color-border);
+  }
   .brand {
+    grid-area: brand;
     gap: 10px;
+    min-width: 0;
   }
   .brand__mark {
     width: 28px;
@@ -621,40 +817,127 @@ input {
     font-size: 24px;
     letter-spacing: 0;
   }
-  .site-header {
-    gap: 12px;
+  .brand__tagline {
+    display: none;
   }
   .site-header__tools {
-    width: 100%;
-    gap: 8px;
+    display: contents;
+  }
+  .site-header__updated {
+    grid-area: updated;
+    /* Lines up under the title, past the 28px mark and its gap. */
+    padding-left: 38px;
+  }
+  .site-header__calculator {
+    grid-area: calculator;
+    padding: 0 14px;
+    border-radius: var(--radius-lg);
+    font-size: 14px;
   }
   .search {
-    width: 100%;
+    grid-area: search;
+    margin-top: 10px;
   }
   .search__input {
     width: 100%;
+    /* 16px or larger keeps iOS from zooming the page when the field gets focus. */
+    font-size: 16px;
   }
 
+  /* Tabs: fixed bottom bar, five equal slots within thumb reach. */
+  .tabs {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: var(--layer-tab-bar);
+    margin: 0;
+    padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0;
+    overflow: visible;
+    background: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    overscroll-behavior: contain;
+  }
   .tab {
-    padding: 0 14px;
-    font-size: 14px;
+    position: relative;
+    min-width: 0;
+    min-height: var(--tab-bar-height);
+    padding: 6px 2px;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    border: 0;
+    border-radius: 0;
+    color: var(--color-text-muted);
+    font-size: clamp(12px, 3.6vw, 14px);
+  }
+  .tab::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 22%;
+    right: 22%;
+    height: 3px;
+    border-radius: 0 0 3px 3px;
+  }
+  .tab:active {
+    background: var(--color-tile);
+  }
+  .tab[aria-selected='true'] {
+    background: transparent;
+    color: var(--color-accent);
+  }
+  .tab[aria-selected='true']::before {
+    background: var(--color-accent);
+  }
+  .tab:focus-visible {
+    outline-offset: -3px;
+  }
+  .tab__count {
+    font-size: 12px;
+  }
+  .tab__label-rest {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 
   .layout {
     gap: 16px;
   }
 
+  /* Rows: sprite, name and source, then odds on the right. The whole row is the Calculate button. */
   .card-grid {
-    gap: 10px;
+    gap: 8px;
   }
+  /* Name and source sit beside the odds; the end date and tier chip may run under them, full width. */
   .card {
-    padding: 12px;
+    min-height: 80px;
+    padding: 10px 12px;
     grid-template-columns: 56px minmax(0, 1fr) auto;
+    grid-template-rows: repeat(4, auto);
     grid-template-areas:
-      'sprite info odds'
-      'foot foot foot';
+      'sprite name odds'
+      'sprite source odds'
+      'sprite until until'
+      'sprite chip chip';
+    align-content: center;
     column-gap: 12px;
-    row-gap: 10px;
+    row-gap: 0;
+  }
+  .card__sprite {
+    align-self: center;
+  }
+  .card:has(.card__calculate:active) {
+    background: var(--color-tile);
+  }
+  .card:has(.card__calculate:focus-visible) {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 2px;
   }
   .sprite {
     width: 56px;
@@ -666,84 +949,94 @@ input {
       0 0,
       7px 7px;
   }
+  .card__info {
+    display: contents;
+  }
   .card__name {
+    grid-area: name;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
     font-size: 16px;
   }
-  .card__info {
-    gap: 4px;
+  .card__source,
+  .card__until {
+    margin-top: 3px;
+    line-height: 1.3;
+  }
+  .card__source {
+    grid-area: source;
+  }
+  /* Grouped rows have no source or end line: name and odds share one flexible track, centered on the sprite. */
+  .event-group .card {
+    grid-template-rows: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'sprite name odds'
+      'sprite chip chip';
+  }
+  .event-group .card__name {
+    align-self: center;
+  }
+  .event-group__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .card__until {
+    grid-area: until;
+  }
+  .card .chip {
+    grid-area: chip;
+    justify-self: start;
+    margin-top: 5px;
+    padding: 2px 6px;
   }
   .card__odds {
+    align-self: center;
     flex-direction: column;
+    flex-wrap: nowrap;
     align-items: flex-end;
     gap: 4px;
   }
   .card__denom {
-    font-size: 22px;
+    font-size: 20px;
+    white-space: nowrap;
   }
   .card__percent {
     font-size: 13px;
   }
   .card__unavailable {
-    max-width: 9ch;
     font-size: 13px;
-    text-align: right;
+    font-weight: 500;
+    white-space: nowrap;
   }
-
-  /* The legend sits above the calculator so the calculator can stay pinned at the end of the layout. */
-  .legend {
-    order: 1;
+  .card__unavailable-full {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
-  .calculator {
-    order: 2;
-    position: sticky;
-    bottom: 12px;
+  .card__unavailable-short {
+    display: inline;
+  }
+  .card__foot {
+    display: contents;
+  }
+  .card__half {
+    display: none;
+  }
+  .card__calculate {
+    position: absolute;
+    inset: 0;
     z-index: 1;
-    max-height: calc(100dvh - 24px);
-    overflow-y: auto;
-    padding: 14px;
-    gap: 12px;
-    box-shadow: 0 -8px 24px rgb(0 0 0 / 45%);
-  }
-  .calculator__summary {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 12px;
-  }
-  .calculator__summary-text {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-  .calculator .panel__title {
-    font-size: 14px;
-    font-weight: 600;
-  }
-  .calculator__summary-line {
-    display: block;
-    font-size: 13px;
-    color: var(--color-text-muted);
-  }
-  .calculator__summary-chance {
-    display: block;
-    font-family: var(--font-number);
-  font-variant-numeric: tabular-nums;
-    font-weight: 700;
-    font-size: 30px;
-    line-height: 1;
-    color: var(--color-accent);
-  }
-  .calculator__toggle {
-    display: block;
-    width: 100%;
-    border-radius: var(--radius-lg);
-    font-size: 14px;
-  }
-  .calculator[data-expanded='false'] .calculator__body {
-    display: none;
-  }
-  .calculator[data-expanded='true'] .calculator__summary-chance {
-    display: none;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    border-radius: inherit;
+    opacity: 0;
   }
 }
 
@@ -754,6 +1047,24 @@ input {
       background-color 150ms ease-out,
       border-color 150ms ease-out;
   }
+  .sheet[open] {
+    animation: sheet-rise 260ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .sheet[open]::backdrop {
+    animation: backdrop-fade 260ms ease-out;
+  }
+}
+
+@keyframes sheet-rise {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes backdrop-fade {
+  from {
+    opacity: 0;
+  }
 }
 
 @media (forced-colors: active) {
@@ -762,5 +1073,7 @@ input {
   }
   .tab[aria-selected='true'] {
     border-width: 3px;
+    text-decoration: underline 3px;
+    text-underline-offset: 4px;
   }
 }

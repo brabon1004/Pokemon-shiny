@@ -1,20 +1,20 @@
-import { useId, useState } from 'react'
+import { useId } from 'react'
 import { calculateShinyChance, parseDenomInput, parseEncountersInput } from '../lib/calculator.ts'
-import { formatChance, formatEncounters, formatOdds } from '../lib/format.ts'
+import { formatChance, formatEncounters } from '../lib/format.ts'
 
 interface CalculatorProps {
+  headingId: string
+  /** A line under the heading, e.g. the Pokémon whose odds were just loaded. */
+  subtitle?: { id: string; text: string } | undefined
   denomInput: string
   encountersInput: string
   onDenomInputChange: (value: string) => void
   onEncountersInputChange: (value: string) => void
 }
 
-export function Calculator({ denomInput, encountersInput, onDenomInputChange, onEncountersInputChange }: CalculatorProps) {
-  const [isExpanded, setIsExpanded] = useState(false)
+export function Calculator({ headingId, subtitle, denomInput, encountersInput, onDenomInputChange, onEncountersInputChange }: CalculatorProps) {
   const id = useId()
   const ids = {
-    heading: `${id}-heading`,
-    body: `${id}-body`,
     denom: `${id}-denom`,
     denomError: `${id}-denom-error`,
     encounters: `${id}-encounters`,
@@ -25,35 +25,20 @@ export function Calculator({ denomInput, encountersInput, onDenomInputChange, on
   const encounters = parseEncountersInput(encountersInput)
   const result = denom.ok && encounters.ok ? calculateShinyChance(denom.value, encounters.value) : null
   const chanceText = result ? formatChance(result.chance) : '–'
-  const summary =
-    denom.ok && encounters.ok
-      ? `${formatOdds(denom.value)} over ${formatEncounters(encounters.value)}`
-      : 'Check the calculator inputs.'
 
   return (
-    <section className="panel calculator" aria-labelledby={ids.heading} data-expanded={isExpanded}>
-      <div className="calculator__summary">
-        <div className="calculator__summary-text">
-          <h2 id={ids.heading} className="panel__title">
-            Odds calculator
-          </h2>
-          <span className="calculator__summary-line">{summary}</span>
-        </div>
-        <span className="calculator__summary-chance" aria-hidden="true">
-          {chanceText}
-        </span>
+    <section className="panel calculator" aria-labelledby={headingId}>
+      <div className="calculator__header">
+        <h2 id={headingId} className="panel__title">
+          Odds calculator
+        </h2>
+        {subtitle !== undefined && (
+          <p id={subtitle.id} className="calculator__subtitle">
+            {subtitle.text}
+          </p>
+        )}
       </div>
-      <button
-        type="button"
-        className="button button--ghost calculator__toggle"
-        aria-expanded={isExpanded}
-        aria-controls={ids.body}
-        onClick={() => setIsExpanded((expanded) => !expanded)}
-      >
-        {isExpanded ? 'Close calculator' : 'Open calculator'}
-      </button>
-
-      <div id={ids.body} className="calculator__body">
+      <div className="calculator__body">
         <div className="calculator__inputs">
           <div className="field">
             <label htmlFor={ids.denom}>Odds, 1 in</label>

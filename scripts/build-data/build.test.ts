@@ -19,6 +19,7 @@ const INPUT: BuildInput = {
   research: researchSchema.parse(researchFixture),
   events: eventsSchema.parse(eventsFixture),
   shinyList: shinyListSchema.parse(shinyListFixture),
+  encountersByEvent: new Map(),
   now: new Date('2026-11-21T15:00:00Z'),
 }
 // The fixture shiny list is a 44-entry sample, far below the live minimum of 500.
@@ -38,7 +39,28 @@ describe('buildCombined', () => {
       all: combined.all.length,
     }).toEqual({ wild: 3, raids: 18, eggs: 77, research: 198, all: 42 })
     expect(skipped).toEqual([])
-    expect(warnings).toEqual([])
+    // Every reward in the saved research sample has canBeShiny: false, as live ScrapedDuck did on 2026-11-18.
+    expect(warnings).toEqual(['ScrapedDuck research: 0 of 198 rewards flagged shiny upstream; using the LeekDuck shiny list instead'])
+  })
+
+  it('marks research rewards shiny from the released shiny list when upstream flags none', () => {
+    const { combined } = buildCombined(INPUT, FIXTURE_MINIMUMS)
+    const bulbasaur = combined.research.find((row) => row.name === 'Bulbasaur')
+    expect(bulbasaur).toMatchObject({ shiny: true, tier: 'base', denom: 512 })
+  })
+
+  it('adds the wild encounters read from event pages, checked against the released shiny list', () => {
+    const icon = (file: string) => `https://cdn.leekduck.com/assets/img/pokemon_icons/${file}`
+    const encountersByEvent = new Map([
+      ['dynamax-trails-2026', [{ name: 'Bulbasaur', image: icon('pokemon_icon_001_00.png'), canBeShiny: false }]],
+    ])
+    const { combined } = buildCombined({ ...INPUT, encountersByEvent }, FIXTURE_MINIMUMS)
+    expect(combined.wild.find((row) => row.source === 'Dynamax Trails')).toMatchObject({
+      key: 'wild:dynamax-trails-2026:Bulbasaur',
+      shiny: true,
+      tier: 'base',
+      denom: 512,
+    })
   })
 
   it('warns about unmapped raid tiers and events with unparseable dates', () => {
@@ -46,6 +68,7 @@ describe('buildCombined', () => {
     const garbled = { eventID: 'garbled', name: 'G', eventType: 'event', start: 'soon', end: '2026-11-22T00:00:00.000' }
     const { warnings } = buildCombined({ ...INPUT, raids: [...INPUT.raids, eliteBoss], events: [...INPUT.events, garbled] }, FIXTURE_MINIMUMS)
     expect(warnings).toEqual([
+      'ScrapedDuck research: 0 of 198 rewards flagged shiny upstream; using the LeekDuck shiny list instead',
       'Unmapped raid tiers (using raid:default): Elite Raids',
       'Ignored 1 event with unparseable dates: garbled (soon to 2026-11-22T00:00:00.000)',
     ])

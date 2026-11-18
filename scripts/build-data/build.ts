@@ -8,6 +8,8 @@ import { normalizeRaids } from './normalize/raids.ts'
 import { normalizeResearch } from './normalize/research.ts'
 import { normalizeShinyList } from './normalize/shiny-list.ts'
 import { findActiveEvents, normalizeWild } from './normalize/wild.ts'
+import type { WildEncounter } from './parse-wild-encounters.ts'
+import { releasedShinyKeys, unflaggedShinyWarning } from './shiny-keys.ts'
 import type { EggHatch, GameEvent, RaidBoss, ResearchTask, ShinyListEntry } from './upstream-schemas.ts'
 
 export interface BuildInput {
@@ -18,6 +20,8 @@ export interface BuildInput {
   research: readonly ResearchTask[]
   events: readonly GameEvent[]
   shinyList: readonly ShinyListEntry[]
+  /** Wild encounters read from LeekDuck event pages, keyed by eventID (see event-pages.ts). */
+  encountersByEvent: ReadonlyMap<string, readonly WildEncounter[]>
   now: Date
 }
 
@@ -40,10 +44,11 @@ export function buildCombined(input: BuildInput, minimums: RowMinimums = LIVE_RO
   const { rates, names, now } = input
   assertOverridesNameKnownSpecies(rates, names)
   const activeEventIDs = findActiveEvents(input.events, now).map((event) => event.eventID)
-  const wild = normalizeWild(input.events, rates, names, now)
-  const raids = normalizeRaids(input.raids, rates, activeEventIDs)
-  const eggs = normalizeEggs(input.eggs, rates)
-  const research = normalizeResearch(input.research, rates)
+  const releasedKeys = releasedShinyKeys(input.shinyList, now)
+  const wild = normalizeWild(input.events, rates, names, now, { encountersByEvent: input.encountersByEvent, releasedKeys })
+  const raids = normalizeRaids(input.raids, rates, activeEventIDs, releasedKeys)
+  const eggs = normalizeEggs(input.eggs, rates, releasedKeys)
+  const research = normalizeResearch(input.research, rates, releasedKeys)
   const all = normalizeShinyList(input.shinyList, rates, names, now)
 
   const combined: Combined = {
@@ -58,7 +63,15 @@ export function buildCombined(input: BuildInput, minimums: RowMinimums = LIVE_RO
     all: all.rows,
   }
   assertRowMinimums(combined, minimums)
-  const warnings: string[] = []
+  const warnings = [
+    unflaggedShinyWarning('ScrapedDuck raids', 'bosses', input.raids.map((boss) => boss.canBeShiny)),
+    unflaggedShinyWarning('ScrapedDuck eggs', 'hatches', input.eggs.map((hatch) => hatch.canBeShiny)),
+    unflaggedShinyWarning(
+      'ScrapedDuck research',
+      'rewards',
+      input.research.flatMap((task) => task.rewards.map((reward) => reward.canBeShiny)),
+    ),
+  ].filter((warning) => warning !== null)
   if (raids.unmappedTiers.length > 0) {
     warnings.push(`Unmapped raid tiers (using raid:default): ${raids.unmappedTiers.join(', ')}`)
   }

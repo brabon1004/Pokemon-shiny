@@ -2,6 +2,7 @@ import type { Row } from '../../../src/shared/contract.ts'
 import type { Rates } from '../../../src/shared/rates.ts'
 import type { SpeciesNames } from '../names.ts'
 import { resolveTier } from '../resolve-tier.ts'
+import { isReleased } from '../shiny-keys.ts'
 import type { ShinyListEntry } from '../upstream-schemas.ts'
 import { dedupeByKey, type NormalizeResult, type SkippedEntry } from './common.ts'
 
@@ -11,12 +12,10 @@ export function normalizeShinyList(
   names: SpeciesNames,
   now: Date,
 ): NormalizeResult {
-  // LeekDuck dates are "YYYY/MM/DD", so a string comparison against today's UTC date orders correctly.
-  const today = now.toISOString().slice(0, 10).replaceAll('-', '/')
   const rows: Row[] = []
   const skipped: SkippedEntry[] = []
   for (const entry of entries) {
-    if (entry.released_date > today) continue
+    if (!isReleased(entry, now)) continue
     const speciesName = names[String(entry.dex)]
     if (speciesName === undefined) {
       // species-names.json is older than this species; `npm run refresh:names` fixes it.

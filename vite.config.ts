@@ -9,7 +9,12 @@ export default defineConfig({
     projects: [
       {
         extends: true,
-        test: { name: 'app', include: ['src/**/*.test.{ts,tsx}'], environment: 'jsdom' },
+        test: {
+          name: 'app',
+          include: ['src/**/*.test.{ts,tsx}'],
+          environment: 'jsdom',
+          setupFiles: ['src/test/setup.ts'],
+        },
       },
       {
         extends: true,

@@ -52,4 +52,9 @@
   --space-page-x: clamp(16px, 3vw, 40px);
   --touch-target: 44px;
   --sidebar-width: 300px;
+  --tab-bar-height: 56px;
+
+  /* Stacking: the calculator sheet is a modal dialog in the top layer, above both. */
+  --layer-header: 10;
+  --layer-tab-bar: 20;
 }

@@ -31,6 +31,7 @@ export const researchSchema = z.array(
 export type ResearchTask = z.infer<typeof researchSchema>[number]
 
 const namedImageSchema = z.object({ name: z.string().min(1), image: imageSchema })
+const spotlightEntrySchema = namedImageSchema.extend({ canBeShiny: z.boolean() })
 
 export const eventsSchema = z.array(
   z.object({
@@ -40,12 +41,20 @@ export const eventsSchema = z.array(
     /** ISO 8601. Ends in "Z" for UTC; no offset means player-local wall-clock time. */
     start: z.string().nullable(),
     end: z.string().nullable(),
+    /** The LeekDuck event page, e.g. "https://leekduck.com/events/dynamax-trails-2026/". */
+    link: z.string().nullish(),
     extraData: z
       .object({
-        communityday: z.object({ shinies: z.array(namedImageSchema).optional() }).optional(),
-        spotlight: z
-          .object({ list: z.array(namedImageSchema.extend({ canBeShiny: z.boolean() })).optional() })
+        communityday: z
+          .object({ spawns: z.array(namedImageSchema).optional(), shinies: z.array(namedImageSchema).optional() })
           .optional(),
+        /** The featured species; `list` holds every species when a Spotlight Hour features several. */
+        spotlight: spotlightEntrySchema
+          .partial()
+          .extend({ list: z.array(spotlightEntrySchema).optional() })
+          .optional(),
+        /** `hasSpawns` means the event page lists wild encounters that this JSON leaves out. */
+        generic: z.object({ hasSpawns: z.boolean().optional() }).optional(),
       })
       .nullish(),
   }),

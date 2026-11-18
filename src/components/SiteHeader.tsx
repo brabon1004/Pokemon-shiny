@@ -5,6 +5,8 @@ interface SiteHeaderProps {
   now: Date
   query: string
   onQueryChange: (query: string) => void
+  /** Phones only: the calculator sits in a sheet, opened from here. */
+  onOpenCalculator?: () => void
 }
 
 function SparkleMark() {
@@ -16,7 +18,7 @@ function SparkleMark() {
   )
 }
 
-export function SiteHeader({ generatedAt, now, query, onQueryChange }: SiteHeaderProps) {
+export function SiteHeader({ generatedAt, now, query, onQueryChange, onOpenCalculator }: SiteHeaderProps) {
   return (
     <header className="site-header">
       <div className="brand">
@@ -30,6 +32,11 @@ export function SiteHeader({ generatedAt, now, query, onQueryChange }: SiteHeade
         <time className="muted site-header__updated" dateTime={generatedAt} title={new Date(generatedAt).toLocaleString()}>
           {formatUpdatedAgo(generatedAt, now)}
         </time>
+        {onOpenCalculator !== undefined && (
+          <button type="button" className="button button--ghost site-header__calculator" onClick={onOpenCalculator}>
+            Calculator
+          </button>
+        )}
         <div role="search" className="search">
           <label htmlFor="pokemon-search" className="visually-hidden">
             Search Pokémon
@@ -40,6 +47,7 @@ export function SiteHeader({ generatedAt, now, query, onQueryChange }: SiteHeade
             type="search"
             placeholder="Search Pokémon"
             autoComplete="off"
+            enterKeyHint="search"
             value={query}
             onChange={(event) => onQueryChange(event.target.value)}
           />

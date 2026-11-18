@@ -1,9 +1,13 @@
-import { useState } from 'react'
+import { useId, useRef, useState } from 'react'
+import { useCompactLayout } from '../hooks/useCompactLayout.ts'
+import { formatEventEnd } from '../lib/event-end.ts'
 import { formatCount, formatOdds } from '../lib/format.ts'
 import { filterByName, sortByBestOdds } from '../lib/rows.ts'
 import { selectRowsByTab, TAB_DETAILS, TAB_IDS, TAB_PANEL_ID, tabElementId, type TabId } from '../lib/tabs.ts'
+import { groupWildByEvent } from '../lib/wild-groups.ts'
 import type { Combined, Row } from '../shared/contract.ts'
 import { Calculator } from './Calculator.tsx'
+import { CalculatorSheet } from './CalculatorSheet.tsx'
 import { RowCard } from './RowCard.tsx'
 import { SiteFooter } from './SiteFooter.tsx'
 import { SiteHeader } from './SiteHeader.tsx'
@@ -28,6 +32,11 @@ export function ShinyOddsPage({ data, now, isSample }: ShinyOddsPageProps) {
   const [denomInput, setDenomInput] = useState('64')
   const [encountersInput, setEncountersInput] = useState('50')
   const [announcement, setAnnouncement] = useState('')
+  /** "Kyogre · 1 in 20" while the phone sheet is open for a tapped row; cleared when opened from the header. */
+  const [pickedRowLabel, setPickedRowLabel] = useState('')
+  const calculatorId = useId()
+  const isCompact = useCompactLayout()
+  const sheetRef = useRef<HTMLDialogElement>(null)
 
   const matchingRows = sortByBestOdds(filterByName(rowsByTab[activeTab], query))
   const isPaged = activeTab === 'all'
@@ -38,6 +47,8 @@ export function ShinyOddsPage({ data, now, isSample }: ShinyOddsPageProps) {
   function selectTab(tab: TabId) {
     setActiveTab(tab)
     setVisibleLimit(ALL_PAGE_SIZE)
+    // The phone tab bar stays on screen, so a new list would otherwise open partway down.
+    if (isCompact && window.scrollY > 0) window.scrollTo({ top: 0 })
   }
 
   function changeQuery(nextQuery: string) {
@@ -49,12 +60,41 @@ export function ShinyOddsPage({ data, now, isSample }: ShinyOddsPageProps) {
     if (row.denom === null) return
     setDenomInput(String(row.denom))
     setAnnouncement(`Calculator set to ${row.name} odds, ${formatOdds(row.denom)}.`)
+    setPickedRowLabel(`${row.name} · ${formatOdds(row.denom)}`)
+    if (isCompact) openCalculatorSheet()
   }
+
+  function openCalculatorFromHeader() {
+    setPickedRowLabel('')
+    openCalculatorSheet()
+  }
+
+  function openCalculatorSheet() {
+    const sheet = sheetRef.current
+    if (sheet !== null && !sheet.open) sheet.showModal()
+  }
+
+  const calculator = (
+    <Calculator
+      headingId={`${calculatorId}-heading`}
+      subtitle={isCompact && pickedRowLabel !== '' ? { id: `${calculatorId}-picked`, text: pickedRowLabel } : undefined}
+      denomInput={denomInput}
+      encountersInput={encountersInput}
+      onDenomInputChange={setDenomInput}
+      onEncountersInputChange={setEncountersInput}
+    />
+  )
 
   return (
     <div className="page">
       <div className="page__inner">
-        <SiteHeader generatedAt={data.generatedAt} now={now} query={query} onQueryChange={changeQuery} />
+        <SiteHeader
+          generatedAt={data.generatedAt}
+          now={now}
+          query={query}
+          onQueryChange={changeQuery}
+          onOpenCalculator={isCompact ? openCalculatorFromHeader : undefined}
+        />
         {isSample && (
           <p className="notice">Showing sample data. The live data file isn't available on this dev server.</p>
         )}
@@ -72,7 +112,24 @@ export function ShinyOddsPage({ data, now, isSample }: ShinyOddsPageProps) {
               <h2 className="results__title">{details.title}</h2>
               <span className="muted">Sorted by best odds</span>
             </div>
-            {shownRows.length > 0 ? (
+            {shownRows.length > 0 && activeTab === 'wild' ? (
+              groupWildByEvent(shownRows).map((group) => {
+                const eventEnd = group.window === undefined ? null : formatEventEnd(group.window)
+                return (
+                  <section key={group.key} className="event-group">
+                    <div className="event-group__header">
+                      <h3 className="event-group__title">{group.event}</h3>
+                      {eventEnd !== null && <span className="event-group__until">{eventEnd}</span>}
+                    </div>
+                    <div className="card-grid">
+                      {group.rows.map((row) => (
+                        <RowCard key={row.key} row={row} tiers={data.tiers} onCalculate={loadIntoCalculator} isInEventGroup />
+                      ))}
+                    </div>
+                  </section>
+                )
+              })
+            ) : shownRows.length > 0 ? (
               <div className="card-grid">
                 {shownRows.map((row) => (
                   <RowCard key={row.key} row={row} tiers={data.tiers} onCalculate={loadIntoCalculator} />
@@ -100,14 +157,18 @@ export function ShinyOddsPage({ data, now, isSample }: ShinyOddsPageProps) {
             )}
           </div>
 
-          <Calculator
-            denomInput={denomInput}
-            encountersInput={encountersInput}
-            onDenomInputChange={setDenomInput}
-            onEncountersInputChange={setEncountersInput}
-          />
-          <TierLegend tiers={data.tiers} />
+          {!isCompact && calculator}
+          <TierLegend tiers={data.tiers} isCollapsible={isCompact} />
         </main>
+        {isCompact && (
+          <CalculatorSheet
+            ref={sheetRef}
+            labelledBy={`${calculatorId}-heading`}
+            describedBy={pickedRowLabel === '' ? undefined : `${calculatorId}-picked`}
+          >
+            {calculator}
+          </CalculatorSheet>
+        )}
 
         <p className="visually-hidden" role="status">
           {announcement}

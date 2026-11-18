@@ -10,6 +10,10 @@ export interface FetchOptions {
   backoffMs?: number
   /** Returns extra wait in ms for a given base wait; defaults to up to 25% random jitter. */
   jitter?: (baseMs: number) => number
+  /** `'manual'` reports a 3xx as a failure instead of following it, so an allowlisted URL can't lead elsewhere. */
+  redirect?: RequestInit['redirect']
+  /** Refuse a larger body (checked against Content-Length, then while reading). No limit when omitted. */
+  maxBodyBytes?: number
   fetchImpl?: typeof fetch
   sleep?: (ms: number) => Promise<void>
 }
@@ -23,6 +27,8 @@ export async function fetchText(url: string, options: FetchOptions = {}): Promis
     retries = DEFAULT_RETRIES,
     backoffMs = DEFAULT_BACKOFF_MS,
     jitter = (baseMs: number) => Math.random() * baseMs * 0.25,
+    redirect = 'follow',
+    maxBodyBytes,
     fetchImpl = fetch,
     sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms)),
   } = options
@@ -34,8 +40,12 @@ export async function fetchText(url: string, options: FetchOptions = {}): Promis
       await sleep(baseMs + jitter(baseMs))
     }
     try {
-      const response = await fetchImpl(url, { signal: AbortSignal.timeout(timeoutMs) })
-      if (response.ok) return await response.text()
+      const response = await fetchImpl(url, { signal: AbortSignal.timeout(timeoutMs), redirect })
+      if (response.ok) return maxBodyBytes === undefined ? await response.text() : await readCapped(url, response, maxBodyBytes)
+      if (response.type === 'opaqueredirect' || (response.status >= 300 && response.status < 400)) {
+        const location = response.headers.get('location') ?? '(no location)'
+        throw new Error(`unable to fetch ${url}: redirected to ${location} (not followed)`)
+      }
       const statusError = `HTTP ${response.status} ${response.statusText}`.trim()
       if (response.status === 429 || response.status >= 500) throw new RetryableError(statusError)
       throw new Error(`unable to fetch ${url}: ${statusError} (not retried)`)
@@ -54,6 +64,30 @@ export async function fetchJson(url: string, options: FetchOptions = {}): Promis
     return JSON.parse(body)
   } catch (error) {
     throw new Error(`unable to parse JSON from ${url}: ${describe(error)}`, { cause: error })
+  }
+}
+
+async function readCapped(url: string, response: Response, maxBodyBytes: number): Promise<string> {
+  const tooLarge = () => new Error(`unable to fetch ${url}: body is over ${maxBodyBytes} bytes (not retried)`)
+  const declaredLength = Number(response.headers.get('content-length'))
+  if (declaredLength > maxBodyBytes) {
+    await response.body?.cancel()
+    throw tooLarge()
+  }
+  if (response.body === null) return ''
+  const reader = response.body.getReader()
+  const decoder = new TextDecoder()
+  let text = ''
+  let bytesRead = 0
+  for (;;) {
+    const { done, value } = await reader.read()
+    if (done) return text + decoder.decode()
+    bytesRead += value.byteLength
+    if (bytesRead > maxBodyBytes) {
+      await reader.cancel()
+      throw tooLarge()
+    }
+    text += decoder.decode(value, { stream: true })
   }
 }
 

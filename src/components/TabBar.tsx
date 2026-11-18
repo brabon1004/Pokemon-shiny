@@ -49,11 +49,22 @@ export function TabBar({ activeTab, rowsByTab, onSelect }: TabBarProps) {
             onClick={() => onSelect(tab)}
             onKeyDown={handleKeyDown}
           >
-            <span>{TAB_DETAILS[tab].label}</span>
+            <TabLabel tab={tab} />
             <span className="tab__count">{formatCount(rowsByTab[tab].length)}</span>
           </button>
         )
       })}
     </div>
+  )
+}
+
+function TabLabel({ tab }: { tab: TabId }) {
+  const { label, compactLabel } = TAB_DETAILS[tab]
+  if (compactLabel === undefined || !label.startsWith(compactLabel)) return <span>{label}</span>
+  return (
+    <span>
+      {compactLabel}{' '}
+      <span className="tab__label-rest">{label.slice(compactLabel.length).trimStart()}</span>
+    </span>
   )
 }

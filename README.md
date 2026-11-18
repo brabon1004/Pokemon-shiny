@@ -6,7 +6,7 @@ Live site: https://brabon1004.github.io/Pokemon-shiny/
 
 ## Tabs
 
-- **Wild**: species boosted by an active event (Community Day, event spawns). Plain wild spawns at the base rate are left out.
+- **Wild**: the species an event running now spawns more often, such as Community Day, Spotlight Hour, or an event like Dynamax Trails, with each one's shiny odds and when the event ends. Most are at the base rate; Community Day and `eventOverrides` boosts show their higher rate. Season-long spawns are left out.
 - **Raids**: current raid bosses, by tier.
 - **Eggs**: current egg hatches, by distance.
 - **Research**: current field research rewards.
@@ -14,11 +14,12 @@ Live site: https://brabon1004.github.io/Pokemon-shiny/
 
 ## How the data gets built
 
-Nothing in `public/data/` is committed. The deploy workflow builds `public/data/combined.json` fresh on every run from three inputs:
+Nothing in `public/data/` is committed. The deploy workflow builds `public/data/combined.json` fresh on every run from these inputs:
 
 1. [ScrapedDuck](https://github.com/bigfoott/ScrapedDuck): raids, eggs, research and events, scraped from LeekDuck.
-2. LeekDuck's shiny list (`leekduck.com/shiny/pms.json`) for the All Pokémon tab. If that fetch fails, the build uses the snapshot in `data/shiny-list.snapshot.json`.
-3. `data/rates.json`: the shiny rate table, edited by hand.
+2. LeekDuck event pages (`leekduck.com/events/<event>/`) for events running now whose spawns ScrapedDuck doesn't list. The build reads each page's Wild Encounters section, one page at a time and at most 12 per run. It only requests https pages under `leekduck.com/events/`. A page that fails to load or lists nothing is skipped with a warning; it never fails the build.
+3. LeekDuck's shiny list (`leekduck.com/shiny/pms.json`) for the All Pokémon tab. If that fetch fails, the build uses the snapshot in `data/shiny-list.snapshot.json`. The build also checks raid, egg, research and wild encounters against it: ScrapedDuck's `canBeShiny` flag misses released shinies (it once marked every research reward as not shiny), so an encounter counts as shiny when ScrapedDuck says so or when its form is on the list with a release date on or before the build date. Shadow raid bosses keep ScrapedDuck's flag, because the list has no shadow entries.
+4. `data/rates.json`: the shiny rate table, edited by hand.
 
 The workflow (`.github/workflows/deploy.yml`) runs on every push to `prod`, every 4 hours on a schedule, and on demand from the Actions tab. It always builds the `prod` branch, so work on `main` never reaches the live site until it is merged into `prod`. It type-checks, lints and tests, builds the data, builds the site and deploys it to GitHub Pages. If any step fails, nothing is deployed and the last good version stays up.
 
@@ -40,7 +41,7 @@ Open `data/rates.json`. Set `updated` to today's date whenever you change it; th
 
 - `tiers`: each rate tier's label and odds (`denom` 512 means 1 in 512).
 - `encounterDefaults`: the tier for each encounter type: `wild`, `research`, `egg`, or `raid:<tier>` using ScrapedDuck's raid tier name, such as `raid:5-Star Raids`. `raid:default` covers raid tiers not listed.
-- `eventTypeDefaults`: the tier for an event type, keyed by ScrapedDuck `eventType`. For now only `community-day` has any effect: Wild tab species come from Community Day shinies or from `eventOverrides`, and other event types have no rows for a default to apply to.
+- `eventTypeDefaults`: the tier for an event type, keyed by ScrapedDuck `eventType`. It applies to every Wild tab species the event features, except Community Day spawns outside its featured shinies, which get their normal rate.
 - `speciesOverrides`: a fixed tier for one species in one encounter type, keyed by dex number as a string:
 
   ```json
@@ -59,7 +60,7 @@ Open `data/rates.json`. Set `updated` to today's date whenever you change it; th
 
   An override also applies to matching raid bosses (a Raid Day, say). Raid rows carry no event window, so the boosted tier shows for every build made while the event counts as active: during the event itself, and up to about 14 hours either side of it for local-time events.
 
-When more than one rule matches, the first match wins in this order: `eventOverrides`, `speciesOverrides`, `eventTypeDefaults` (Community Day only, see above), `encounterDefaults`.
+When more than one rule matches, the first match wins in this order: `eventOverrides`, `speciesOverrides`, `eventTypeDefaults` (see above), `encounterDefaults`.
 
 The rates are community estimates from archived Silph Road research (via Bulbapedia). Niantic doesn't publish official odds.
 

@@ -2,6 +2,7 @@ import { cleanup, fireEvent, render, screen, within } from '@testing-library/rea
 import { afterEach, describe, expect, it } from 'vitest'
 import sampleJson from '../fixtures/combined.sample.json'
 import { combinedSchema, type Combined, type Row } from '../shared/contract.ts'
+import { emulateCompactViewport } from '../test/setup.ts'
 import { ShinyOddsPage } from './ShinyOddsPage.tsx'
 
 const sample = combinedSchema.parse(sampleJson)
@@ -16,8 +17,8 @@ function renderPage(data: Combined = sample) {
 
 function cardNames(): string[] {
   return within(screen.getByRole('tabpanel'))
-    .queryAllByRole('heading', { level: 3 })
-    .map((heading) => heading.textContent ?? '')
+    .queryAllByRole('article')
+    .map((card) => within(card).getByRole('heading').textContent ?? '')
 }
 
 describe('tabs', () => {
@@ -31,6 +32,24 @@ describe('tabs', () => {
     renderPage()
     expect(screen.getByRole('tab', { name: /Wild/ }).getAttribute('aria-selected')).toBe('true')
     expect(cardNames()).toEqual(['Litwick', 'Galarian Ponyta'])
+  })
+
+  it('groups wild spawns under one heading per event that says when it ends', () => {
+    renderPage()
+    const eventHeadings = within(screen.getByRole('tabpanel')).getAllByRole('heading', { level: 3 })
+    expect(eventHeadings.map((heading) => heading.textContent)).toEqual(['Event: Festival of Lights', 'Event: Galarian Expedition'])
+    const festival = eventHeadings[0]?.closest('section') as HTMLElement
+    expect(festival.textContent).toContain('Until Fri, Nov 20, 8 PM')
+    const litwick = within(festival).getByRole('heading', { level: 4, name: 'Litwick' }).closest('article')
+    expect(litwick?.textContent).not.toContain('Festival of Lights')
+    expect(litwick?.textContent).not.toContain('Until')
+  })
+
+  it('hides wild event groups with no rows matching the search', () => {
+    renderPage()
+    fireEvent.change(screen.getByRole('searchbox'), { target: { value: 'ponyta' } })
+    const eventHeadings = within(screen.getByRole('tabpanel')).getAllByRole('heading', { level: 3 })
+    expect(eventHeadings.map((heading) => heading.textContent)).toEqual(['Event: Galarian Expedition'])
   })
 
   it('starts on the first tab in tab order that has rows when Wild is empty', () => {
@@ -92,6 +111,16 @@ describe('cards', () => {
     expect(card.getByText('Legendary')).toBeTruthy()
   })
 
+  it('shows a tier chip only when the tier is not base', () => {
+    renderPage()
+    fireEvent.click(screen.getByRole('tab', { name: /Research/ }))
+    const dratini = screen.getByRole('heading', { name: 'Dratini' }).closest('article') as HTMLElement
+    expect(within(dratini).queryByText('Base')).toBeNull()
+    fireEvent.click(screen.getByRole('tab', { name: /Raids/ }))
+    const kyogre = screen.getByRole('heading', { name: 'Kyogre' }).closest('article') as HTMLElement
+    expect(within(kyogre).getByText('Legendary')).toBeTruthy()
+  })
+
   it('says "Shiny not available" and offers no Calculate button for a non-shiny row', () => {
     renderPage()
     fireEvent.click(screen.getByRole('tab', { name: /Raids/ }))
@@ -103,9 +132,16 @@ describe('cards', () => {
   it('loads a card’s odds into the calculator', () => {
     renderPage()
     fireEvent.click(screen.getByRole('tab', { name: /Raids/ }))
-    fireEvent.click(screen.getByRole('button', { name: 'Use Kyogre odds in the calculator' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Calculate odds for Kyogre' }))
     expect((screen.getByLabelText('Odds, 1 in') as HTMLInputElement).value).toBe('20')
     expect(screen.getByText('Calculator set to Kyogre odds, 1 in 20.')).toBeTruthy()
+  })
+
+  it('keeps the sidebar calculator on wide screens, with no sheet or header button', () => {
+    renderPage()
+    expect(screen.getByRole('region', { name: 'Odds calculator' })).toBeTruthy()
+    expect(screen.queryByRole('button', { name: 'Calculator' })).toBeNull()
+    expect(document.querySelector('dialog')).toBeNull()
   })
 })
 
@@ -124,10 +160,11 @@ describe('search', () => {
     expect(screen.getByText('No Pokémon match that search.')).toBeTruthy()
   })
 
-  it('shows the wild empty state when no boosted spawn is live', () => {
+  it('shows the wild heading and empty state when no event spawn is live', () => {
     render(<ShinyOddsPage data={sample} now={new Date('2027-06-01T12:00:00')} isSample={false} />)
     fireEvent.click(screen.getByRole('tab', { name: /Wild/ }))
-    expect(screen.getByText('No boosted wild spawns right now.')).toBeTruthy()
+    expect(screen.getByRole('heading', { level: 2, name: 'Event wild spawns' })).toBeTruthy()
+    expect(screen.getByText('No event spawns right now.')).toBeTruthy()
   })
 })
 
@@ -164,8 +201,7 @@ describe('calculator', () => {
     fireEvent.change(screen.getByLabelText('Odds, 1 in'), { target: { value: '20' } })
     fireEvent.change(screen.getByLabelText('Encounters'), { target: { value: '30' } })
     const calculator = within(screen.getByRole('region', { name: 'Odds calculator' }))
-    // Shown in the collapsed mobile summary and in the full result.
-    expect(calculator.getAllByText('78.5%')).toHaveLength(2)
+    expect(calculator.getByText('78.5%')).toBeTruthy()
     expect(calculator.getByText('14 encounters')).toBeTruthy()
     expect(calculator.getByText('45 encounters')).toBeTruthy()
     expect(calculator.getByText('90 encounters')).toBeTruthy()
@@ -177,14 +213,6 @@ describe('calculator', () => {
     fireEvent.change(denomInput, { target: { value: '0' } })
     expect(screen.getByText('Enter odds of 1 or more, like 64.')).toBeTruthy()
     expect(denomInput.getAttribute('aria-invalid')).toBe('true')
-  })
-
-  it('toggles the compact view with an aria-expanded button', () => {
-    renderPage()
-    const toggle = screen.getByRole('button', { name: 'Open calculator' })
-    expect(toggle.getAttribute('aria-expanded')).toBe('false')
-    fireEvent.click(toggle)
-    expect(screen.getByRole('button', { name: 'Close calculator' }).getAttribute('aria-expanded')).toBe('true')
   })
 })
 
@@ -201,5 +229,66 @@ describe('rate tiers legend', () => {
       'LegendaryAbout 1 in 20',
       'Raid DayAbout 1 in 10',
     ])
+  })
+})
+
+describe('phone layout', () => {
+  it('opens the calculator sheet prefilled with a tapped row’s odds', () => {
+    emulateCompactViewport()
+    renderPage()
+    fireEvent.click(screen.getByRole('tab', { name: /Raids/ }))
+    fireEvent.click(screen.getByRole('button', { name: 'Calculate odds for Kyogre' }))
+    const sheet = screen.getByRole('dialog', { name: 'Odds calculator' })
+    expect((within(sheet).getByLabelText('Odds, 1 in') as HTMLInputElement).value).toBe('20')
+  })
+
+  it('names the tapped Pokémon in the sheet, as its description, and drops it when opened from the header', () => {
+    emulateCompactViewport()
+    renderPage()
+    fireEvent.click(screen.getByRole('tab', { name: /Raids/ }))
+    fireEvent.click(screen.getByRole('button', { name: 'Calculate odds for Kyogre' }))
+    const sheet = screen.getByRole('dialog', { name: 'Odds calculator', description: 'Kyogre · 1 in 20' })
+    expect(within(sheet).getByText('Kyogre · 1 in 20')).toBeTruthy()
+
+    fireEvent.click(within(sheet).getByRole('button', { name: 'Close calculator' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Calculator' }))
+    expect(within(screen.getByRole('dialog')).queryByText(/Kyogre/)).toBeNull()
+  })
+
+  it('opens the sheet from the header and keeps the encounters entered there', () => {
+    emulateCompactViewport()
+    renderPage()
+    expect(screen.queryByRole('dialog')).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'Calculator' }))
+    const sheet = screen.getByRole('dialog', { name: 'Odds calculator' })
+    fireEvent.change(within(sheet).getByLabelText('Encounters'), { target: { value: '30' } })
+    fireEvent.click(within(sheet).getByRole('button', { name: 'Close calculator' }))
+    expect(screen.queryByRole('dialog')).toBeNull()
+
+    fireEvent.click(screen.getByRole('tab', { name: /Raids/ }))
+    fireEvent.click(screen.getByRole('button', { name: 'Calculate odds for Kyogre' }))
+    const reopened = within(screen.getByRole('dialog', { name: 'Odds calculator' }))
+    expect((reopened.getByLabelText('Encounters') as HTMLInputElement).value).toBe('30')
+    expect(reopened.getByText('78.5%')).toBeTruthy()
+  })
+
+  it('folds the rate tiers into a closed "About these odds" disclosure that keeps the estimate note', () => {
+    emulateCompactViewport()
+    renderPage()
+    const summary = screen.getByText('About these odds')
+    const disclosure = summary.closest('details')
+    expect(summary.tagName).toBe('SUMMARY')
+    expect(disclosure?.open).toBe(false)
+    expect(disclosure?.textContent).toContain('Every number here is a community estimate.')
+    expect(disclosure?.querySelectorAll('li')).toHaveLength(6)
+  })
+
+  it('keeps the tab bar keyboard-navigable', () => {
+    emulateCompactViewport()
+    renderPage()
+    const all = screen.getByRole('tab', { name: /All Pokémon/ })
+    fireEvent.keyDown(screen.getByRole('tab', { name: /Wild/ }), { key: 'ArrowLeft' })
+    expect(document.activeElement).toBe(all)
+    expect(all.getAttribute('aria-selected')).toBe('true')
   })
 })

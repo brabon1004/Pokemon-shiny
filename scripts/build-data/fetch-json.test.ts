@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { fetchJson } from './fetch-json.ts'
+import { fetchJson, fetchText } from './fetch-json.ts'
 
 const URL_UNDER_TEST = 'https://example.test/raids.min.json'
 
@@ -58,5 +58,48 @@ describe('fetchJson', () => {
       `unable to parse JSON from ${URL_UNDER_TEST}`,
     )
     expect(fetchImpl.calls).toBe(1)
+  })
+})
+
+describe('fetchText', () => {
+  it('passes the redirect mode to fetch and reports a redirect instead of following it', async () => {
+    const seen: Array<RequestInit | undefined> = []
+    const fetchImpl = async (_url: string | URL | Request, init?: RequestInit): Promise<Response> => {
+      seen.push(init)
+      return new Response(null, { status: 302, headers: { location: 'https://evil.example/' } })
+    }
+    await expect(fetchText(URL_UNDER_TEST, { fetchImpl, sleep: noSleep, redirect: 'manual' })).rejects.toThrow(
+      `unable to fetch ${URL_UNDER_TEST}: redirected to https://evil.example/ (not followed)`,
+    )
+    expect(seen.map((init) => init?.redirect)).toEqual(['manual'])
+  })
+
+  it('refuses a body whose Content-Length is over maxBodyBytes without reading it', async () => {
+    const fetchImpl = fakeFetch(new Response('x'.repeat(20), { headers: { 'content-length': '20' } }))
+    await expect(fetchText(URL_UNDER_TEST, { fetchImpl, sleep: noSleep, maxBodyBytes: 10 })).rejects.toThrow(
+      `unable to fetch ${URL_UNDER_TEST}: body is over 10 bytes (not retried)`,
+    )
+    expect(fetchImpl.calls).toBe(1)
+  })
+
+  it('stops reading a streamed body once it passes maxBodyBytes', async () => {
+    let chunksPulled = 0
+    const longStream = new ReadableStream<Uint8Array>({
+      pull(controller) {
+        chunksPulled++
+        if (chunksPulled > 1_000) controller.close()
+        else controller.enqueue(new TextEncoder().encode('xxxx'))
+      },
+    })
+    const fetchImpl = fakeFetch(new Response(longStream))
+    await expect(fetchText(URL_UNDER_TEST, { fetchImpl, sleep: noSleep, maxBodyBytes: 10 })).rejects.toThrow(
+      `unable to fetch ${URL_UNDER_TEST}: body is over 10 bytes (not retried)`,
+    )
+    expect(chunksPulled).toBeLessThan(10)
+  })
+
+  it('returns a streamed body at exactly maxBodyBytes', async () => {
+    const fetchImpl = fakeFetch(new Response('héllo')) // 6 bytes in UTF-8
+    await expect(fetchText(URL_UNDER_TEST, { fetchImpl, sleep: noSleep, maxBodyBytes: 6 })).resolves.toBe('héllo')
   })
 })

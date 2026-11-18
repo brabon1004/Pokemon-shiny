@@ -6,9 +6,11 @@ import type { z } from 'zod'
 import { combinedSchema } from '../../src/shared/contract.ts'
 import { ratesSchema } from '../../src/shared/rates.ts'
 import { buildCombined } from './build.ts'
+import { fetchEventPage, fetchEventWildEncounters } from './event-pages.ts'
 import { fetchJson } from './fetch-json.ts'
 import { formatError, formatWarning } from './format-warning.ts'
 import { speciesNamesSchema } from './names.ts'
+import { findEventsWithSpawnPages } from './normalize/wild.ts'
 import { loadShinyList, parseUpstream, serializeShinyList, SOURCES } from './sources.ts'
 import { eggsSchema, eventsSchema, raidsSchema, researchSchema, shinyListSchema } from './upstream-schemas.ts'
 import { writeFileAtomic } from './write-file-atomic.ts'
@@ -68,6 +70,13 @@ async function main(args: readonly string[]): Promise<void> {
         }),
   ])
 
+  const now = new Date()
+  // Sequential and after events.json, since the events decide which pages to read. Failures only warn.
+  const encountersByEvent = await fetchEventWildEncounters(findEventsWithSpawnPages(events, now), {
+    fetchPage: (url) => fetchEventPage(url),
+    warn,
+  })
+
   const { combined, skipped, warnings } = buildCombined({
     rates,
     names,
@@ -76,7 +85,8 @@ async function main(args: readonly string[]): Promise<void> {
     research,
     events,
     shinyList: shinyList.entries,
-    now: new Date(),
+    encountersByEvent,
+    now,
   })
   const validation = combinedSchema.safeParse(combined)
   if (!validation.success) {
@@ -95,7 +105,7 @@ async function main(args: readonly string[]): Promise<void> {
   for (const warning of warnings) warn(warning)
   const counts = (['wild', 'raids', 'eggs', 'research', 'all'] as const).map((tab) => `${tab}=${combined[tab].length}`)
   console.log(
-    `wrote ${PATHS.output}: ${counts.join(' ')} shinyList=${shinyList.origin}` +
+    `wrote ${PATHS.output}: ${counts.join(' ')} shinyList=${shinyList.origin} eventPages=${encountersByEvent.size}` +
       `${shouldRefreshSnapshot ? ' (snapshot refreshed)' : ''} warnings=${skipped.length + warnings.length} in ${Date.now() - startedMs}ms`,
   )
 }
